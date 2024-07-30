@@ -1,0 +1,38 @@
+# Dependencies that cannot be fatpacked
+# when producing our dist
+requires 'Params::Validate';
+requires 'Params::Util';
+requires 'Class::XSAccessor';
+requires 'Sub::Identify';
+requires 'Ref::Util::XS';
+requires 'Data::UUID';
+requires 'Variable::Magic';
+requires 'Package::Stash::XS';
+requires 'DateTime';
+requires 'XString';
+requires 'Math::Pari';
+requires 'CryptX';
+requires 'Clone';
+requires 'List::MoreUtils::XS';
+requires 'Proc::FastSpawn';
+requires 'IO::FDPass'; 
+requires 'IO::Socket::SSL';
+requires 'Net::SSLeay';
+requires 'common::sense';
+requires 'Digest::SHA';
+requires 'AnyEvent';  # For some reason this gets installed in the arch 
+                      # directory and depends on a pl file that doesn't 
+                      # fatpack.
+requires 'Guard';
+requires 'Array::Heap'; 
+requires 'AnyEvent::Fork'; # Won't work in fatpack, AnyEvent::Fork calls this with perl -M
+                           # when setting up worker processes.
+
+on test => sub {
+  requires 'Text::Diff';
+};
+
+on build => sub {
+  requires 'local::lib';
+  requires 'Sys::GNU::ldconfig';
+};

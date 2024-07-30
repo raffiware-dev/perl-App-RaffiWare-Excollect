@@ -1,0 +1,77 @@
+vars:
+  cwd: 
+    command: pwd | tr -d '\n'
+  version: 
+    command: perl -Ilib -MApp::RaffiWare::ExCollect -e 'print "$App::RaffiWare::ExCollect::VERSION"'
+  distname: 'App-RaffiWare-ExCollect'
+
+blocks:
+  - name: build-dist
+    desc: "Build Dist"
+    commands:
+      - exec: echo 'building [%version%] in [%cwd%]' 
+      - exec: rm App-RaffiWare-ExCollect-0.001001* 
+      - exec: rm MANIFEST
+      - exec: make clean
+      - exec: perl Makefile.PL
+      - exec: make manifest
+      - exec: make distdir
+      - exec: rm  [%distname%]-[%version%]/cpanfile
+      - exec: cp cpanfile.dist  [%distname%]-[%version%]/cpanfile
+      - exec: cp cpanfile.dist.snapshot  [%distname%]-[%version%]/cpanfile.snapshot 
+      - exec: ln -s [%cwd%]/distlocal [%distname%]-[%version%]/local   
+        condition: -d [%cwd%]/local
+      - exec: cp -R fatlib [%distname%]-[%version%]/fatlib
+      - diag: 'changing workdir to [%cwd%]/[%distname%]-[%version%]'
+      - dir:  '[%cwd%]/[%distname%]-[%version%]'
+      - exec: perl -MFile::Find -e 'my $strip_pm = sub { if ( /\.pm$/ ) { print "strip $_\n"; system("perlstrip --cache -v $_"); } };  find({ wanted => $strip_pm, no_chdir => 1 }, "lib");'
+      - exec: perl -p -i -e 's/;(our\$VERSION=".+";)\s*(\$VERSION=eval\$VERSION;\s*)/;\n\n$1\n$2\n\n/' lib/App/RaffiWare/ExCollect.pm
+      - exec: mkdir bin
+      - exec: fatpack file script/exc.PL > bin/exc
+      - exec: fatpack file lib/App/RaffiWare/ExCollect/Worker.pm > Worker.pm
+      - exec: cp script/anyevent-fork.PL bin/anyevent-fork
+      - exec: carton install 
+        condition: '! -L [%cwd%]/[%distname%]-[%version%]/local'
+      - exec: carton bundle
+        condition:  '! -f [%cwd%]/install/vendor-cache.tar.gz'
+      - exec: tar -czvf vendor-cache.tar.gz vendor
+        condition: '! -f [%cwd%]/install/vendor-cache.tar.gz'
+      - exec: rm [%var%]
+        for-vars:
+          - lib/App/RaffiWare/Role/HasLogger.pm
+          - lib/App/RaffiWare/Role/TakesCmdArgs.pm
+          - lib/App/RaffiWare/Role/IsCmd.pm
+          - lib/App/RaffiWare/Role/DoesLogging.pm
+          - lib/App/RaffiWare/Role/HasCfg.pm
+          - lib/App/RaffiWare/Role/HasAPIClient.pm
+          - lib/App/RaffiWare/Cfg.pm
+          - lib/App/RaffiWare/ExCollect/Worker.pm
+          - lib/App/RaffiWare/Logger.pm
+          - lib/App/RaffiWare/API.pm  
+          - script/exc.PL
+          - script/anyevent-fork.PL
+          - MANIFEST 
+      - exec: rm -rf [%var%]
+        for-vars: 
+          - fatlib
+          - install
+          - lib/App/RaffiWare/ExCollect
+          - lib/App/RaffiWare/Role
+          - vendor 
+          - binaries 
+      - exec: mv local [%cwd%]
+        condition:  '! -d [%cwd%]/distlocal' 
+      - exec: rm -rf local
+        condition:  ' -d local'
+      - exec: rm local
+        condition:  ' -L local'
+      - exec: mkdir lib/App/RaffiWare/ExCollect
+      - exec: mv Worker.pm lib/App/RaffiWare/ExCollect/Worker.pm
+      - exec: perl Makefile.PL
+      - exec: make manifest
+      - exec: make dist 
+      - exec: mv vendor-cache.tar.gz [%cwd%]/install/vendor-cache.tar.gz
+        condition: '! -f [%cwd%]/install/vendor-cache.tar.gz' 
+      - exec: mv App-RaffiWare-ExCollect-[%version%].tar.gz  [%cwd%]/App-RaffiWare-ExCollect-[%version%].tar.gz 
+
+

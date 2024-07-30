@@ -1,0 +1,41 @@
+# Version control files and dirs.
+\bRCS\b
+\bCVS\b
+,v$
+\B\.svn\b
+\B\.git\b 
+^.gitignore$
+.gitkeep$
+
+# Makemaker generated files and dirs.
+^MANIFEST\.
+^Makefile$
+ ^Makefile.old$ 
+^blib/
+^MakeMaker-\d
+
+^MYMETA.json$
+^MYMETA.yml$
+^cpanfile.snapshot$
+^cpanfile.dist$
+^cpanfile.dist.snapshot$
+
+^local
+^distlocal
+
+.*.tar.gz$ 
+
+^vendor
+^t.*\/logs
+^t.*\/jobs
+^t.*\/state$
+^t/log
+^xt
+^maint
+fatpacker*
+packlists
+fatlib
+workdir
+.dex*
+
+App-RaffiWare-ExCollect-.*
