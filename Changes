@@ -1,6 +1,17 @@
 Revision history for Perl extension App::RaffiWare::ExCollect.
 
-0.01  Fri Jul 26 20:13:58 2024
+0.002 Fri Feb 28 22:13:16 2025
+
+  * Job log API limits
+  * Exec process polling fixes, limit continuous reads, fixed delay rate ballooning
+  * Offset bug fixes
+  * Use api_time for job logs
+  * Improved logging
+  * Replay cache
+  * Auto retry requests
+  * perltidy 
+
+0.001  Fri Jul 26 20:13:58 2024
 	- original version; created by h2xs 1.23 with options
 		-AXn App::RaffiWare::ExCollect
 
