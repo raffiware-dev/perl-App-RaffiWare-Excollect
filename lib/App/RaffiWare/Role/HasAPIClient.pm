@@ -49,6 +49,7 @@ sub _build_api {
 
    return $api_class->instance( 
              cmd_cfg      => $self->cmd_cfg,
+             cmd_dir      => $self->cmd_dir,
              api_hostname => $self->get_cfg_val('api_hostname'),
              ( $key_id && $private_key )
                ? ( key_id      => $key_id,

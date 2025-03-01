@@ -10,8 +10,7 @@ use Text::Diff;
 
 BEGIN { 
 
-  my $fatbin = "$FindBin::Bin/../bin/exc"; 
-  require $fatbin if -f $fatbin;
+  require App::RaffiWare::ExCollect::Worker;
 
 }; 
 

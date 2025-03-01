@@ -36,6 +36,7 @@ use App::RaffiWare::ExCollect::Cmd;
 use App::RaffiWare::ExCollect::Cmd::Watcher;
 use App::RaffiWare::ExCollect::Cmd::ClientInit;
 use App::RaffiWare::ExCollect::Cmd::Job;
+use App::RaffiWare::ExCollect::Cmd::Version; 
 use App::RaffiWare::Logger;
 use App::RaffiWare::API; 
 use App::RaffiWare::ExCollect::HostData; 

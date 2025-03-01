@@ -1140,6 +1140,23 @@ DISTRIBUTIONS
       Exporter 5.57
       ExtUtils::MakeMaker 0
       perl 5.008
+  IO-Socket-SSL-2.089
+    pathname: S/SU/SULLR/IO-Socket-SSL-2.089.tar.gz
+    provides:
+      IO::Socket::SSL 2.089
+      IO::Socket::SSL::Intercept 2.056
+      IO::Socket::SSL::OCSP_Cache 2.089
+      IO::Socket::SSL::OCSP_Resolver 2.089
+      IO::Socket::SSL::PublicSuffix undef
+      IO::Socket::SSL::SSL_Context 2.089
+      IO::Socket::SSL::SSL_HANDLE 2.089
+      IO::Socket::SSL::Session_Cache 2.089
+      IO::Socket::SSL::Trace 2.089
+      IO::Socket::SSL::Utils 2.015
+    requirements:
+      ExtUtils::MakeMaker 0
+      Net::SSLeay 1.46
+      Scalar::Util 0
   JSON-4.10
     pathname: I/IS/ISHIGAKI/JSON-4.10.tar.gz
     provides:
@@ -1366,6 +1383,19 @@ DISTRIBUTIONS
       Role::Tiny 0
       strict 0
       warnings 0
+  Net-SSLeay-1.94
+    pathname: C/CH/CHRISN/Net-SSLeay-1.94.tar.gz
+    provides:
+      Net::SSLeay 1.94
+      Net::SSLeay::Handle 1.94
+    requirements:
+      English 0
+      ExtUtils::MakeMaker 0
+      File::Spec::Functions 0
+      MIME::Base64 0
+      Text::Wrap 0
+      constant 0
+      perl 5.008001
   PAR-1.020
     pathname: R/RS/RSCHUPP/PAR-1.020.tar.gz
     provides:
@@ -1504,10 +1534,10 @@ DISTRIBUTIONS
       Proc::FastSpawn 1.2
     requirements:
       ExtUtils::MakeMaker 0
-  RaffiWare-APIUtils-0.01
-    pathname: R/RA/RAFFIWARE/RaffiWare-APIUtils-0.01.tar.gz
+  RaffiWare-APIUtils-0.02
+    pathname: R/RA/RAFFIWARE/RaffiWare-APIUtils-0.02.tar.gz
     provides:
-      RaffiWare::APIUtils 0.01
+      RaffiWare::APIUtils 0.02
     requirements:
       Crypt::PK::RSA 0
       Crypt::Random 0

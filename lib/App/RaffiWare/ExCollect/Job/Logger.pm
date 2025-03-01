@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Moo; 
-use Types::Standard qw| :all |;   
+use Types::Standard qw| :all |;
 
 use RaffiWare::APIUtils qw| get_utc_time_stamp |;
 
@@ -80,6 +80,12 @@ sub _build_log_fhs {
     my $file_path = "${file}_file";
 
     open my $fh, '>>', $self->$file_path or die $!; 
+
+    # Auto flush writer
+    my $old_fh = select($fh);
+    $| = 1;
+    select($old_fh);  
+
     $fh_hash->{$file} = $fh;
 
   }
@@ -92,16 +98,35 @@ has '+api_class' => (
   default => sub {'App::RaffiWare::ExCollect::API'}
 );  
 
+# Hard cap on how much a data a 
+# command can log.
+my $MAX_LOG_BYTES = 1024 * 250; 
+
 sub _build_msg_handler {
 
+  my $truncated  = 0; 
+
   return sub {
-           my ( $self, $level, $msg ) = @_; 
+           my ( $self, $level, $msg, $total_bytes ) = @_; 
 
-           my $ts = get_utc_time_stamp();
+           $self->local_job_log( $level, $msg, get_utc_time_stamp() );
 
-           $self->local_job_log($level, $msg, $ts);
+           my $ts = $self->api->api_time_stamp();
 
-           $self->api->add_job_log( $self->job_id, $level, $msg, $ts );
+           if ( $total_bytes > $MAX_LOG_BYTES ) {
+
+             if ( !$truncated ) {
+
+               $msg = "$level truncated. Additional output will be available locally";
+
+               $self->api->add_job_log( $self->job_id, 'warning', $msg, $ts ) 
+             }
+
+             $truncated = 1;
+           }
+           else { 
+             $self->api->add_job_log( $self->job_id, $level, $msg, $ts );
+           }
          };
 }
 

@@ -42,13 +42,13 @@ sub _build_msg_handler {
 }
 
 sub log_message {
-  my ( $self, $level, $msg ) = @_;
+  my ( $self, $level, $msg, @args ) = @_;
 
   my $level_map = $self->LEVEL_MAP;
 
   return unless $level_map->{$level} and $level_map->{$level} >= $level_map->{$self->level};
 
-  $self->msg_handler->($self, $level, $msg);
+  $self->msg_handler->($self, $level, $msg, @args);
 }
 
 

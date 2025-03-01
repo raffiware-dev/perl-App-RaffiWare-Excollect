@@ -42,6 +42,9 @@ my $job = App::RaffiWare::ExCollect::Job->init(
                  status       => 'queued',
                  command_string => q|/bin/echo -n '#CV-ClientName-CV# #CV-OperatingSystem-CV#'|,
                  priority     => 1,
+                 instance => {
+                    execute_type   => 'bin',
+                 } 
 
               },
               cfg_file   => 't/excollect/exc.cfg',

@@ -1,8 +1,9 @@
+version: 2
 vars:
   cwd: 
-    command: pwd | tr -d '\n'
+    from_command: pwd | tr -d '\n'
   version: 
-    command: perl -Ilib -MApp::RaffiWare::ExCollect -e 'print "$App::RaffiWare::ExCollect::VERSION"'
+    from_command: perl -Ilib -MApp::RaffiWare::ExCollect -e 'print "$App::RaffiWare::ExCollect::VERSION"'
   distname: 'App-RaffiWare-ExCollect'
 
 blocks:

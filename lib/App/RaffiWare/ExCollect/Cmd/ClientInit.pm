@@ -90,8 +90,9 @@ sub init_dot_dir {
     $cmd_dir, 
     "$cmd_dir/jobs", 
     "$cmd_dir/archive",  
+    "$cmd_dir/replay_cache",
   ) {
-    mkdir $dir if !-d $dir;  
+    mkdir $dir if !-d $dir;
   }
 
 }

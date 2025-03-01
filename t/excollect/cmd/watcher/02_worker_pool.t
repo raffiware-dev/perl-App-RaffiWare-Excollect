@@ -65,7 +65,9 @@ my $job = App::RaffiWare::ExCollect::Job->init(
                  status         => 'queued',
                  command_string => '/bin/uptime',
                  priority       => 1,
-
+                 instance => {
+                    execute_type => 'bin'
+                 }
               },
               cfg_file   => 't/excollect/exc.cfg',
               cmd_dir    => 't/excollect/cmd/watcher' ); 

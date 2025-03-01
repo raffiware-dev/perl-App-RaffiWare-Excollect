@@ -16,7 +16,6 @@ use Data::Dumper;
 use JSON qw| decode_json encode_json |; 
 
 with 'App::RaffiWare::Role::IsCmd',
-#'App::RaffiWare::Role::HasLogger',
      'App::RaffiWare::Role::HasAPIClient',
      'App::RaffiWare::ExCollect::Role::HasJobs';  
 
@@ -43,7 +42,7 @@ sub _build_get_opts {
   [qw| 
        fetch 
        execute 
-  |] 
+  |]
 }
 
 has 'job_id' => (
@@ -53,12 +52,11 @@ has 'job_id' => (
 ); 
 
 sub _build_pos_args {
-  [ 
-    [ '_set_job_id', 'Job Id required', sub { shift } ]  
+  [
+    [ '_set_job_id', 'Job Id required', sub { shift } ]
   ]
-}  
+}
 
- 
 sub run {
   my ( $self ) = @_;
 
@@ -82,7 +80,6 @@ sub run {
   }
 
   $job->execute() if $self->do_execute();
-
 
   return 0;
 }

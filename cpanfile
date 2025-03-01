@@ -26,10 +26,11 @@ requires 'Mo::default';
 requires 'Sys::OsRelease';
 requires 'Text::ParseWords';
 requires 'Text::Template::Simple';
-
+requires 'IO::Socket::SSL';
+requires 'Crypt::Random';
 
 requires 'RaffiWare::APIUtils', '>= 0.01',
-  dist   => 'RAFFIWARE/RaffiWare-APIUtils-0.01.tar.gz',
+  dist   => 'RAFFIWARE/RaffiWare-APIUtils-0.02.tar.gz',
   mirror => "file://$home/darkpan/"; 
 
 on 'test' => sub {
