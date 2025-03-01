@@ -85,7 +85,7 @@ case "$ID" in
       OS_FAMILY="debian" 
       VERSION=$VERSION_ID; #$(cat /etc/debian_version);
       RUN_DEPS=();
-      BUILD_DEPS=( build-essential libz-dev libssl-dev ); 
+      BUILD_DEPS=( build-essential libssl-dev zlib1g-dev ); 
 
       ;;
   arch*)
@@ -126,6 +126,10 @@ fetch_install_file "$WEB/downloads/install_files/local_lib.pl"
 
 BIN_NAME=$( $SYSPERL $BUILD_DIR/bin_name.pl )
 
+if [[ ! -z ${EXC_BIN_BRANCH+x} ]]; then
+   echo "Looking for $EXC_BIN_BRANCH $BIN_NAME binary";
+   BIN_NAME="$BIN_NAME-$EXC_BIN_BRANCH"  
+fi 
 
 eval $( $SYSPERL $BUILD_DIR/local_lib.pl $EXC_PERL_ROOT  )
 
@@ -143,6 +147,9 @@ if [[ $BIN_FOUND == 0 && -z ${EXC_NO_BIN+x} ]]; then
 
    chmod 0755 $EXC_PERL_BIN/exc 
    chmod 0755 $EXC_PERL_BIN/anyevent-fork
+elif [[ ! -z ${EXC_BIN_BRANCH+x} && -z ${EXC_NO_BIN+x} ]]; then
+  echo "No binary version found for branch"
+  exit 1;
 else
   echo "No binary version found, attempting to build from source"
 

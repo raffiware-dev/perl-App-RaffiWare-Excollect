@@ -7,6 +7,10 @@ vars:
   distname: 'App-RaffiWare-ExCollect'
 
 blocks:
+  - name: info
+    desc: dist info
+    commands:
+      - diag: '[%cwd%] [%distname%]-[%version%]' 
   - name: build-dist
     desc: "Build Dist"
     commands:
