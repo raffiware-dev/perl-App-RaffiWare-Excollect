@@ -29,7 +29,7 @@ requires 'Text::ParseWords';
 requires 'Text::Template::Simple';
 requires 'IO::Socket::SSL';
 requires 'Crypt::Random';
-requires 'Specio', '0.50';
+requires 'Specio', '>= 0.50';
 
 requires 'RaffiWare::APIUtils', '>= 0.001',
   dist   => 'RAFFIWARE/RaffiWare-APIUtils-0.002001.tar.gz',
