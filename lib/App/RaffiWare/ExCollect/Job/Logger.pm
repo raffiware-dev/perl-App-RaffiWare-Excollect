@@ -113,7 +113,7 @@ sub _build_msg_handler {
 
            my $ts = $self->api->api_time_stamp();
 
-           if ( $total_bytes > $MAX_LOG_BYTES ) {
+           if ( defined $total_bytes and $total_bytes > $MAX_LOG_BYTES ) {
 
              if ( !$truncated ) {
 

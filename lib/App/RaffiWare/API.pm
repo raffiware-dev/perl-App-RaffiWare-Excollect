@@ -129,6 +129,8 @@ sub needs_api_time_offset_update {
 sub update_api_time_offset {
   my ($self) = @_;
 
+  return if $self->get_cfg_val('local_only'); 
+
   my $dt  = get_utc_datetime();
   my $req = $self->_build_request(
                      POST => '/time_offset',
@@ -226,7 +228,7 @@ sub _build_request {
 
 sub _do_request {
   my ( $self, $req, %args ) = @_;
-
+    
   my $retry           = $args{retry} // 1;
   my $replayable      = $args{replayable} || 0;
   my $sign            = $args{sign_request};
@@ -426,9 +428,22 @@ sub api_datetime {
   my $offset = $self->api_time_offset;
   my $cur_dt = get_utc_datetime();
 
-  return $cur_dt->subtract( seconds => $offset ); 
+  return $cur_dt->add( seconds => $offset ); 
 }
 
 sub api_time_stamp { return get_timestamp_iso8601( shift->api_datetime ) }
+
+sub fetch_authority_key {
+  my ( $self, $activation_token ) = @_;
+
+  my $resp = $self->request( get => "/authority",);
+
+  FATAL('Host registration failed. Could not fetch authority key') if !$resp->is_success;
+
+  my $msg      = $self->get_message($resp);
+  my $root_key = $msg->{public};
+
+  $self->set_cfg_val( root_public_key => $root_key );
+}
 
 1;

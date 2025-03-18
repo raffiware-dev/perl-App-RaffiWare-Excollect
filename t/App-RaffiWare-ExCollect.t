@@ -9,15 +9,14 @@ use strict;
 use warnings;
 
 use Test::More tests => 1;
-use FindBin;
+
 BEGIN { 
 
-  my $fatbin = "$FindBin::Bin/../lib/App/RaffiWare/ExCollect/Worker.pm"; 
-  require $fatbin if -f $fatbin;
-
-  use_ok('App::RaffiWare::ExCollect::Cmd') 
+  require App::RaffiWare::ExCollect::Worker;
 
 };
+
+use_ok('App::RaffiWare::ExCollect::Cmd') 
 
 #########################
 

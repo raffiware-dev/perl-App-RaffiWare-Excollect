@@ -1,0 +1,6 @@
+# config-file-type: JSON 1
+
+{
+   "multiline_text" : "some big long\nstring of multi\nline test here\n\n\n",
+   "short_text" : "in_json"
+}

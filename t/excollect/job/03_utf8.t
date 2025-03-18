@@ -1,5 +1,7 @@
 #!/usr/bin/env perluse strict;
 use warnings;
+#use utf8;
+use open qw( :std :encoding(UTF-8) );
 
 BEGIN { 
 
@@ -33,7 +35,11 @@ mkdir 't/excollect/job/jobs';
 my $job_id = 'chj_4729542gf0b04239b67e71d160c3694e';
 
 
-my $pushkin =<<'END';
+my $pushkin = do {
+
+   use utf8;
+
+   <<'END';
 На берегу пустынных волн
 Стоял он, дум великих полн,
 И вдаль глядел. Пред ним широко
@@ -46,6 +52,7 @@ my $pushkin =<<'END';
 В тумане спрятанного солнца,
 Кругом шумел.
 END
+};
 
 my $job = App::RaffiWare::ExCollect::Job->init(
               { 
@@ -66,7 +73,7 @@ isa_ok($job, 'App::RaffiWare::ExCollect::Job');
 $job->execute();
 
 my $stdout_file = $job->job_logger->stdout_file;
-my $stdout = do { local $/ = undef; open my $stdout_fh, '<', $stdout_file; <$stdout_fh> };
+my $stdout = do { local $/ = undef; open my $stdout_fh, '<:encoding(UTF-8)', $stdout_file; <$stdout_fh> };
 
 #chomp $stdout;
 is $stdout, $pushkin, 'UTF-8 STDOUT';
@@ -77,11 +84,16 @@ my $status = $job->get_job_val('status');
 is $status, 'complete', 'job status complete'; 
 
 
-my $rune=<<'END';
+my $rune =  do {
+
+    use utf8;
+
+    <<'END';
 ᚠᛇᚻ᛫ᛒᛦᚦ᛫ᚠᚱᚩᚠᚢᚱ᛫ᚠᛁᚱᚪ᛫ᚷᛖᚻᚹᛦᛚᚳᚢᛗ
 ᛋᚳᛖᚪᛚ᛫ᚦᛖᚪᚻ᛫ᛗᚪᚾᚾᚪ᛫ᚷᛖᚻᚹᛦᛚᚳ᛫ᛗᛁᚳᛚᚢᚾ᛫ᚻᛦᛏ᛫ᛞᚫᛚᚪᚾ
 ᚷᛁᚠ᛫ᚻᛖ᛫ᚹᛁᛚᛖ᛫ᚠᚩᚱ᛫ᛞᚱᛁᚻᛏᚾᛖ᛫ᛞᚩᛗᛖᛋ᛫ᚻᛚᛇᛏᚪᚾ᛬
 END
+};
 
 $job_id = 'chj_75t9542gf0b04239b67e71d160c3694b'; 
 
@@ -105,7 +117,7 @@ isa_ok($job, 'App::RaffiWare::ExCollect::Job');
 $job->execute();
 
 $stderr_file = $job->job_logger->stderr_file;
-$stderr = do { local $/ = undef; open my $stderr_fh, '<', $stderr_file; <$stderr_fh> };
+$stderr = do { local $/ = undef; open my $stderr_fh, '<:encoding(UTF-8)', $stderr_file; <$stderr_fh> };
 
 diag $stderr;
 

@@ -1,4 +1,4 @@
-# ./script/exc.PL host-init 
+# ./script/exc.PL client-init 
 package App::RaffiWare::ExCollect::Cmd::ClientInit;
 
 use strict;
@@ -38,9 +38,9 @@ sub _build_get_opts {
 
 sub _build_pos_args {
   [ 
-    [ '_set_activation_token', 'Activation Token Required', sub { shift } ]  
+    [ '_set_activation_token', 'Activation Token Required', sub { shift } ]
   ]
-}  
+}
 
 sub is_registered { 
    my $self = shift;  
@@ -61,6 +61,8 @@ sub run {
   $self->init_dot_dir();
 
   $self->init_cfg();
+
+  $self->fetch_authority_key();
 
   $self->register_host();
 
@@ -96,6 +98,12 @@ sub init_dot_dir {
   }
 
 }
+
+sub fetch_authority_key {
+  my ( $self ) = @_;  
+
+  $self->api->fetch_authority_key();
+} 
 
 sub register_host {
   my ( $self ) = @_;  

@@ -1,9 +1,18 @@
 #!/usr/bin/env perl
 
+use Config;
+use Sys::GNU::ldconfig;
 
-open(my $fh, '-|', 'maint/bin_name.pl') or die $!;
-my $binary = do { local $/ = undef; <$fh> };
-close $fh;
+ 
+my $libcv       = $Config{gnulibc_version};
+my ($arch)      = $Config{archname} =~ /^([^-]+)-/;
+my ($libcryptv) = ld_lookup("libcrypt") =~ /\.([1-9])$/; 
+
+my $binary = "exc.par-$arch-$libcv-$libcryptv"; 
+
+#open(my $fh, '-|', 'maint/bin_name.pl') or die $!;
+#my $binary = do { local $/ = undef; <$fh> };
+#close $fh;
 
 
 #  /usr/sbin/ldconfig -p | grep 'libcrypt.so\.'

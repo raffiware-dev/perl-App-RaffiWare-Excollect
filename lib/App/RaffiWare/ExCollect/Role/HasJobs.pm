@@ -9,6 +9,8 @@ use Types::Standard qw| :all |;
 use App::RaffiWare::ExCollect::Job;
 use App::RaffiWare::Cfg;
 
+use App::RaffiWare::Logger; 
+
 has 'jobs_dir' => (
   is    => 'ro',
   isa   => Str,
@@ -52,25 +54,25 @@ sub _build_jobs {
 sub init_job {
   my ($self, $job_data) = @_; 
 
-   my $job = App::RaffiWare::ExCollect::Job->init( 
-               {
-                  %{$job_data}{qw| id status priority |},
-                  command_string => $job_data->{command_instance}->{command_string},
-                  instance_id    => $job_data->{command_instance}->{id},
-                  client_name    => $job_data->{host}->{hostname},
-                  command => {
-                    %{$job_data->{command_instance}->{command}}{qw| id  |}, 
-                  },
-                  instance => {
-                    %{$job_data->{command_instance}}{qw| id created_datetime site signed_by site_user_signature command_string |},
-                    execute_type => $job_data->{command_instance}->{attributes}->{execute_type}->{value},
-                    script_src   => $job_data->{command_instance}->{attributes}->{script_src}->{value} || '',
-                  }
-               },
-               cfg_file => $self->cfg_file, 
-               cmd_cfg  => $self->cmd_cfg,
-               cmd_dir  => $self->cmd_dir
-             ); 
+  App::RaffiWare::ExCollect::Job->init( 
+    {
+       %{$job_data}{qw| id status priority |},
+       command_string => $job_data->{command_instance}->{command_string},
+       instance_id    => $job_data->{command_instance}->{id},
+       client_name    => $job_data->{host}->{hostname},
+       command => {
+         %{$job_data->{command_instance}->{command}}{qw| id  |}, 
+       },
+       instance => {
+         %{$job_data->{command_instance}}{qw| id created_datetime site signed_by site_user_signature command_string |},
+         execute_type => $job_data->{command_instance}->{attributes}->{execute_type}->{value},
+         script_src   => $job_data->{command_instance}->{attributes}->{script_src}->{value} || '',
+       }
+    },
+    cfg_file => $self->cfg_file, 
+    cmd_cfg  => $self->cmd_cfg,
+    cmd_dir  => $self->cmd_dir
+  ); 
 
 }
 

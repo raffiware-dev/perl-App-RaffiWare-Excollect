@@ -3,6 +3,7 @@ my $home = File::HomeDir->my_home;
 
 
 requires 'Config::YAML';
+requires 'Config::JSON'; 
 requires 'DateTime';
 requires 'File::HomeDir';
 requires 'HTTP::Request';
@@ -28,9 +29,10 @@ requires 'Text::ParseWords';
 requires 'Text::Template::Simple';
 requires 'IO::Socket::SSL';
 requires 'Crypt::Random';
+requires 'Specio', '0.5';
 
-requires 'RaffiWare::APIUtils', '>= 0.01',
-  dist   => 'RAFFIWARE/RaffiWare-APIUtils-0.02.tar.gz',
+requires 'RaffiWare::APIUtils', '>= 0.001',
+  dist   => 'RAFFIWARE/RaffiWare-APIUtils-0.002001.tar.gz',
   mirror => "file://$home/darkpan/"; 
 
 on 'test' => sub {

@@ -3,10 +3,6 @@
 use strict;
 use warnings;  
 
-use FindBin;
-
-use lib "$FindBin::Bin/../lib"; ## auto-remove ##
-use lib "$FindBin::Bin/../local/lib/perl5"; ## auto-remove ## 
 
 ## installed-lib ##
 

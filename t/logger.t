@@ -7,18 +7,15 @@ use Test::More;
  
 BEGIN { 
 
-  use FindBin;
-  my $fatbin = "$FindBin::Bin/../bin/exc"; 
-  require $fatbin if -f $fatbin;
+  require App::RaffiWare::ExCollect::Worker;
 
 }; 
 
 use_ok('App::RaffiWare::Logger');
 
-unlink "$FindBin::Bin/log";  
+unlink "t/log";  
 
-diag $FindBin::Bin;
-my $logger = App::RaffiWare::Logger->instance( level => 'info', log_dir => "$FindBin::Bin" );
+my $logger = App::RaffiWare::Logger->instance( level => 'info', log_dir => 't/' );
 
 $logger->log_message('info',  'test log');
 $logger->log_message('debug',  'disabled debug log'); 

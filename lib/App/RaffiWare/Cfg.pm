@@ -6,8 +6,15 @@ use warnings;
 use Moo; 
 use Types::Standard qw| :all |; 
 
+use Config::JSON;
 use Config::YAML;
 use Fcntl qw|:flock|;
+
+has 'cfg_storage' => (
+  is      => 'ro',
+  isa     => Str,
+  default => sub { 'yaml' }
+); 
 
 our %CFG_DEFAUTLS = (
     api_hostname      => 'https://devapi.raffiware.io',
@@ -91,6 +98,30 @@ sub _build_yaml {
   return $c;
 } 
 
+has 'json' => (
+  is      => 'ro',
+  isa     => InstanceOf['Config::JSON'],
+  lazy    => 1, 
+  builder => '_build_json'
+); 
+
+sub _build_json {  
+  my $self = shift;
+
+  my $json_file = $self->cfg_file;
+
+  if ( !-f $json_file ) {
+    die "Invalid Config: ". $self->cfg_file if !$self->create;
+
+    open my $cfg_fh, '>',  $json_file;
+    print $cfg_fh '{}';
+    close $cfg_fh;
+  }
+
+  return Config::JSON->new( pathToFile => $self->cfg_file );
+}
+
+
 sub init {
   my $class = shift; 
 
@@ -108,36 +139,58 @@ sub set {
 
     my $value = shift @kvs;
 
-    if ( ref($key) eq 'ARRAY' 
-      and scalar @$key > 1   
-    ) {
-      my $acc  = shift @$key ;
-      my $root = $self->get($acc);
-
-      while ( @$key > 1 ) { 
-        $root = $root->{ shift @$key } 
-      }
-
-      $root->{ shift @$key } = $value;
-
+    if ($self->cfg_storage eq 'json') {
+        $self->set_json( $key => $value );
     }
-    else {
-      my $acc = "set_$key";
-
-      $self->yaml->$acc($value);
+    elsif ($self->cfg_storage eq 'yaml') {
+        $self->set_yaml( $key => $value );
     }
+
   }
 
-  $self->yaml->write();
+  $self->yaml->write() if $self->cfg_storage eq 'yaml';
+
+}
+
+sub set_json {
+  my ( $self, $key, $value ) = @_;   
+
+  $self->json->set( $key => $value ) ; 
+}
+
+sub set_yaml {
+  my ( $self, $key, $value ) = @_;
+
+  if ( ref($key) eq 'ARRAY' 
+    and scalar @$key > 1
+  ) {
+    my $acc  = shift @$key ;
+    my $root = $self->get($acc);
+
+    while ( @$key > 1 ) { 
+      $root = $root->{ shift @$key } 
+    }
+
+    $root->{ shift @$key } = $value;
+
+  }
+  else {
+
+    my $acc = "set_$key";
+
+    $self->yaml->$acc($value);
+  }
 
 }
 
 sub get {
   my ( $self, $key ) = @_;  
 
+  return $self->json->get($key) if $self->cfg_storage eq 'json';
+
   my $acc = "get_$key";
- 
+
   return $self->yaml->$acc;
-}  
+}
 
 1;

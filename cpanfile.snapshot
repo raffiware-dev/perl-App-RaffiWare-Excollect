@@ -232,6 +232,18 @@ DISTRIBUTIONS
       Clone 0.47
     requirements:
       ExtUtils::MakeMaker 0
+  Config-JSON-1.5202
+    pathname: R/RI/RIZEN/Config-JSON-1.5202.tar.gz
+    provides:
+      Config::JSON 1.5202
+    requirements:
+      ExtUtils::MakeMaker 6.30
+      File::Temp 0.18
+      JSON 2.16
+      List::Util 1.19
+      Moo 0
+      Test::Deep 0.095
+      Test::More 0.7
   Config-YAML-1.42
     pathname: M/MD/MDXI/Config-YAML-1.42.tar.gz
     provides:
@@ -1534,10 +1546,10 @@ DISTRIBUTIONS
       Proc::FastSpawn 1.2
     requirements:
       ExtUtils::MakeMaker 0
-  RaffiWare-APIUtils-0.02
-    pathname: R/RA/RAFFIWARE/RaffiWare-APIUtils-0.02.tar.gz
+  RaffiWare-APIUtils-0.002001
+    pathname: R/RA/RAFFIWARE/RaffiWare-APIUtils-0.002001.tar.gz
     provides:
-      RaffiWare::APIUtils 0.02
+      RaffiWare::APIUtils 0.002001
     requirements:
       Crypt::PK::RSA 0
       Crypt::Random 0
@@ -1568,52 +1580,53 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Scalar::Util 0
       perl 5.006
-  Specio-0.48
-    pathname: D/DR/DROLSKY/Specio-0.48.tar.gz
+  Specio-0.50
+    pathname: D/DR/DROLSKY/Specio-0.50.tar.gz
     provides:
-      Specio 0.48
-      Specio::Coercion 0.48
-      Specio::Constraint::AnyCan 0.48
-      Specio::Constraint::AnyDoes 0.48
-      Specio::Constraint::AnyIsa 0.48
-      Specio::Constraint::Enum 0.48
-      Specio::Constraint::Intersection 0.48
-      Specio::Constraint::ObjectCan 0.48
-      Specio::Constraint::ObjectDoes 0.48
-      Specio::Constraint::ObjectIsa 0.48
-      Specio::Constraint::Parameterizable 0.48
-      Specio::Constraint::Parameterized 0.48
-      Specio::Constraint::Role::CanType 0.48
-      Specio::Constraint::Role::DoesType 0.48
-      Specio::Constraint::Role::Interface 0.48
-      Specio::Constraint::Role::IsaType 0.48
-      Specio::Constraint::Simple 0.48
-      Specio::Constraint::Structurable 0.48
-      Specio::Constraint::Structured 0.48
-      Specio::Constraint::Union 0.48
-      Specio::Declare 0.48
-      Specio::DeclaredAt 0.48
-      Specio::Exception 0.48
-      Specio::Exporter 0.48
-      Specio::Helpers 0.48
-      Specio::Library::Builtins 0.48
-      Specio::Library::Numeric 0.48
-      Specio::Library::Perl 0.48
-      Specio::Library::String 0.48
-      Specio::Library::Structured 0.48
-      Specio::Library::Structured::Dict 0.48
-      Specio::Library::Structured::Map 0.48
-      Specio::Library::Structured::Tuple 0.48
-      Specio::OO 0.48
-      Specio::PartialDump 0.48
-      Specio::Registry 0.48
-      Specio::Role::Inlinable 0.48
-      Specio::Subs 0.48
-      Specio::TypeChecks 0.48
-      Test::Specio 0.48
+      Specio 0.50
+      Specio::Coercion 0.50
+      Specio::Constraint::AnyCan 0.50
+      Specio::Constraint::AnyDoes 0.50
+      Specio::Constraint::AnyIsa 0.50
+      Specio::Constraint::Enum 0.50
+      Specio::Constraint::Intersection 0.50
+      Specio::Constraint::ObjectCan 0.50
+      Specio::Constraint::ObjectDoes 0.50
+      Specio::Constraint::ObjectIsa 0.50
+      Specio::Constraint::Parameterizable 0.50
+      Specio::Constraint::Parameterized 0.50
+      Specio::Constraint::Role::CanType 0.50
+      Specio::Constraint::Role::DoesType 0.50
+      Specio::Constraint::Role::Interface 0.50
+      Specio::Constraint::Role::IsaType 0.50
+      Specio::Constraint::Simple 0.50
+      Specio::Constraint::Structurable 0.50
+      Specio::Constraint::Structured 0.50
+      Specio::Constraint::Union 0.50
+      Specio::Declare 0.50
+      Specio::DeclaredAt 0.50
+      Specio::Exception 0.50
+      Specio::Exporter 0.50
+      Specio::Helpers 0.50
+      Specio::Library::Builtins 0.50
+      Specio::Library::Numeric 0.50
+      Specio::Library::Perl 0.50
+      Specio::Library::String 0.50
+      Specio::Library::Structured 0.50
+      Specio::Library::Structured::Dict 0.50
+      Specio::Library::Structured::Map 0.50
+      Specio::Library::Structured::Tuple 0.50
+      Specio::OO 0.50
+      Specio::PartialDump 0.50
+      Specio::Registry 0.50
+      Specio::Role::Inlinable 0.50
+      Specio::Subs 0.50
+      Specio::TypeChecks 0.50
+      Test::Specio 0.50
     requirements:
       B 0
       Carp 0
+      Clone 0
       Devel::StackTrace 0
       Eval::Closure 0
       Exporter 0
@@ -1625,7 +1638,6 @@ DISTRIBUTIONS
       Role::Tiny 1.003003
       Role::Tiny::With 0
       Scalar::Util 0
-      Storable 0
       Sub::Quote 0
       Test::Fatal 0
       Test::More 0.96

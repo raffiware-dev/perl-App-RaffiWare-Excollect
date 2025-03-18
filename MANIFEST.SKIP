@@ -29,7 +29,7 @@
 ^t.*\/logs
 ^t.*\/jobs
 ^t.*\/state$
-^t/log
+^t/log$
 ^xt
 ^maint
 fatpacker*

@@ -100,7 +100,18 @@ sub _load_job_state {
 
   my $state_file = sprintf( '%s/state', $self->job_dir );
 
-  return App::RaffiWare::Cfg->new( cfg_file => $state_file );
+  my $state = try {
+                my $cfg = App::RaffiWare::Cfg->new( cfg_storage => 'json',  cfg_file => $state_file );
+                $cfg->json; # testing json
+
+                $cfg;
+              }
+              catch {
+                # Old job configs might be yaml
+                App::RaffiWare::Cfg->new( cfg_file => $state_file ); 
+              };
+
+  return $state;
 }
 
 sub reload_job_state {
@@ -291,6 +302,7 @@ sub execute {
   }
 
   $self->lock() or $self->watcher_exit( 0, "Could not get lock" );
+
   $self->reload_job_state();
 
   # Force time offset update so we have the best chance of 

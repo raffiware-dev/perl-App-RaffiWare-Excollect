@@ -252,7 +252,12 @@ has 'job_fetch_timer' => (
 sub _build_job_fetch_timer {
   my ($self) = @_;
 
-  return AE::timer 0, $self->job_poll_interval,
+  # Slightly randomize the job poll time to reduce herding
+  # if a large number of clients agents start at once..
+  my @pad_range = (-10..10);
+  my $interval  = $self->job_poll_interval + $pad_range[int(rand(@pad_range))];
+
+  return AE::timer 0, $interval,
            sub {
              DEBUG("Checking for new jobs");
 

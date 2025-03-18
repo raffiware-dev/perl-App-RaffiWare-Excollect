@@ -1,7 +1,7 @@
 package App::RaffiWare::ExCollect;
 
 
-our $VERSION = "0.002001"; 
+our $VERSION = "0.002004"; 
 $VERSION = eval $VERSION; 
 
 

@@ -7,7 +7,8 @@ use Moo;
 use Types::Standard qw| :all |;
 
 use RaffiWare::APIUtils qw| get_utc_time_stamp get_utc_datetime
-                            get_timestamp_iso8601 make_uri_uuid |;
+                            get_timestamp_iso8601 make_uri_uuid
+                            verify_exc_tokens |;
 
 use App::RaffiWare::Logger;
 use App::RaffiWare::Cfg;
@@ -21,6 +22,12 @@ use Data::Dumper;
 use URI;
 
 extends 'App::RaffiWare::API';
+
+sub build_api_args {
+  my ( $class, $cmd ) = @_;
+
+  return +{ cmd_dir => $cmd->cmd_dir };
+} 
 
 has 'uri_base' => (
   is      => 'ro',
@@ -66,11 +73,16 @@ sub get_command_user_key {
                         get => $self->uri_base ."/jobs/$job_id/command_instance/command/all_users/$user_id/public_key" );
 
     if ( $resp && !$resp->is_success ) {
-      ERROR( "Failed to fetch key for $user_id - " . $self->get_error_str($resp) );
+      ERROR( "$job_id - Failed to fetch key for $user_id - " . $self->get_error_str($resp) );
       return;
     }
 
     $key_data = $self->get_message($resp);
+
+    if ( !$self->verify_key($key_data) ) {
+      ERROR( "$job_id - Key Verification Failed" );
+      return; 
+    }
 
     $self->add_user_key( $user_id, $key_data );
   }
@@ -78,10 +90,17 @@ sub get_command_user_key {
   return $key_data;
 }
 
-sub build_api_args {
-  my ( $class, $cmd ) = @_;
+sub verify_key {
+  my ( $self, $key_data ) = @_; 
 
-  return +{ cmd_dir => $cmd->cmd_dir };
+  my $sig    = $key_data->{signature};
+  my $tokens = {
+     key_id  => $key_data->{key_id},
+     pub_key => $key_data->{public_key}
+  };
+  my $authority = $self->get_cfg_val('root_public_key');
+
+  return verify_exc_tokens( $tokens, $sig, $authority ); 
 }
 
 sub register_host {
