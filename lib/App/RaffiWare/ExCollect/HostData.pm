@@ -71,18 +71,24 @@ sub load_cfg {
   return App::RaffiWare::Cfg->new( cfg_file => $cfg_file );
 }
 
-sub clear_data { my $self = shift; $self->_clear_data; $self->_clear_data_map }
+sub data {
+   my $self = shift;
 
-has 'data' => (
+   return [@{$self->static_data}, @{$self->dynamic_data}];
+}
+
+sub clear_data { my $self = shift; $self->_clear_static_data; $self->_clear_data_map }
+
+has 'static_data' => (
   is      => 'ro',
   isa     => ArrayRef,
   lazy    => 1,
-  builder => '_build_data',
-  clearer => '_clear_data'
+  builder => '_build_static_data',
+  clearer => '_clear_static_data'
 );
 
-sub _build_data {
-   my $self = shift;   
+sub _build_static_data {
+   my $self = shift;
 
    Sys::OsRelease->init();
 
@@ -91,11 +97,6 @@ sub _build_data {
           description => 'Client systme FQDN',
           value_type  => 'text',
           value       => hostfqdn(),
-        },
-        { name         => 'Uptime',
-          description  => 'Client system uptime',
-          value_type   => 'text', 
-          value        => `uptime -p`
         },
         { name        => 'OperatingSystem',
           description => 'Operating System',
@@ -117,6 +118,18 @@ sub _build_data {
    return $data;
 }
 
+sub dynamic_data {
+
+    return [
+        { name         => 'Uptime',
+          description  => 'Client system uptime',
+          value_type   => 'text', 
+          value        => `uptime -p`
+        },
+   ];
+
+}
+
 has 'data_map' => (
   is          => 'ro',
   isa         => HashRef,
@@ -136,7 +149,7 @@ sub _build_data_map {
       map { 
          ( $_->{name} => $_->{value} ) 
       }
-      @{$self->data}
+      (@{$self->static_data}, @{$self->dynamic_data})
    }
 
 }
