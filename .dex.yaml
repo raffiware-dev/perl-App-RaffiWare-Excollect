@@ -15,7 +15,7 @@ blocks:
     desc: "Build Dist"
     commands:
       - exec: echo 'building [%version%] in [%cwd%]' 
-      - exec: rm App-RaffiWare-ExCollect-0.001001* 
+      - exec: rm -rf App-RaffiWare-ExCollect-0.* 
       - exec: rm MANIFEST
       - exec: make clean
       - exec: perl Makefile.PL
