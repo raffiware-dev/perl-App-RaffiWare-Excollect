@@ -92,7 +92,7 @@ sub _build_static_data {
 
    my $data = [
     { name        => 'Hostname',
-      description => 'Client systme FQDN',
+      description => 'Client system FQDN',
       value_type  => 'text',
       value       => hostfqdn(),
     },
