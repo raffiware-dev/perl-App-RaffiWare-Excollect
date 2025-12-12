@@ -6,7 +6,7 @@ use warnings;
 use Moo; 
 use Types::Standard qw| :all |;
 
-use RaffiWare::APIUtils qw| get_utc_time_stamp |;
+use RaffiWare::APIUtils qw| get_utc_time_stamp_tp |;
 
 with 'App::RaffiWare::Role::HasAPIClient', 
      'App::RaffiWare::Role::DoesLogging'; 
@@ -107,27 +107,27 @@ sub _build_msg_handler {
   my $truncated  = 0; 
 
   return sub {
-           my ( $self, $level, $msg, $total_bytes ) = @_; 
+    my ( $self, $level, $msg, $total_bytes ) = @_; 
 
-           $self->local_job_log( $level, $msg, get_utc_time_stamp() );
+    $self->local_job_log( $level, $msg, get_utc_time_stamp_tp() );
 
-           my $ts = $self->api->api_time_stamp();
+    my $ts = $self->api->api_time_stamp();
 
-           if ( defined $total_bytes and $total_bytes > $MAX_LOG_BYTES ) {
+    if ( defined $total_bytes and $total_bytes > $MAX_LOG_BYTES ) {
 
-             if ( !$truncated ) {
+      if ( !$truncated ) {
 
-               $msg = "$level truncated. Additional output will be available locally";
+        $msg = "$level truncated. Additional output will be available locally";
 
-               $self->api->add_job_log( $self->job_id, 'warning', $msg, $ts ) 
-             }
+        $self->api->add_job_log( $self->job_id, 'warning', $msg, $ts ) 
+      }
 
-             $truncated = 1;
-           }
-           else { 
-             $self->api->add_job_log( $self->job_id, $level, $msg, $ts );
-           }
-         };
+      $truncated = 1;
+    }
+    else { 
+      $self->api->add_job_log( $self->job_id, $level, $msg, $ts );
+    }
+  };
 }
 
 around LEVEL_MAP => sub {

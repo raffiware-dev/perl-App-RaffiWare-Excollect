@@ -4,9 +4,7 @@ use warnings;
 
 BEGIN { 
 
-  use FindBin;
-  my $fatbin = "$FindBin::Bin/../bin/exc"; 
-  require $fatbin if -f $fatbin;
+  require App::RaffiWare::ExCollect::Worker;  
 
   use lib qw|t/lib|;
   use Test::ExCollectWorker; # disabled command_verification 
@@ -36,19 +34,19 @@ rmtree "t/excollect/job/archive/$job_id";
 mkdir 't/excollect/job/jobs';
 
 my $job = App::RaffiWare::ExCollect::Job->init(
-              { 
-                 id           => $job_id,
-                 client_name  => 'TestingClient',
-                 status       => 'queued',
-                 command_string => q|/bin/echo -n '#CV-ClientName-CV# #CV-OperatingSystem-CV#'|,
-                 priority     => 1,
-                 instance => {
-                    execute_type   => 'bin',
-                 } 
-
-              },
-              cfg_file   => 't/excollect/exc.cfg',
-              cmd_dir    => 't/excollect/job' );
+  { 
+     id           => $job_id,
+     client_name  => 'TestingClient',
+     status       => 'queued',
+     command_string => q|/bin/echo -n '#CV-ClientName-CV# #CV-OperatingSystem-CV#'|,
+     priority     => 1,
+     instance => {
+        execute_type   => 'bin',
+     } 
+  },
+  cfg_file   => 't/excollect/exc.cfg',
+  cmd_dir    => 't/excollect/job' 
+);
 
 
 isa_ok($job, 'App::RaffiWare::ExCollect::Job'); 
@@ -59,6 +57,5 @@ my $stdout_file = $job->job_logger->stdout_file;
 my $stdout = do { local $/ = undef; open my $stdout_fh, '<', $stdout_file; <$stdout_fh> };
 
 is $stdout, 'TestingClient debian', 'Client Variables set in final command';
- 
 
 done_testing();

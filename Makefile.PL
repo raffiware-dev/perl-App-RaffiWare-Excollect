@@ -12,5 +12,7 @@ WriteMakefile(
     ABSTRACT          => 'API client for ExCollect', 
     AUTHOR            => 'RaffiWare <dev@raffiware.io>',
     LICENSE           => 'mit',
-
+    test => {
+       TESTS => 't/*.t t/*/*.t t/excollect/*/*.t t/excollect/*/*/*.t'
+    }
 );

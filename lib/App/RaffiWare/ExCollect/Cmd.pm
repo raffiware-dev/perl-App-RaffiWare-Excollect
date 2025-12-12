@@ -13,7 +13,6 @@ use String::CamelCase qw|camelize|;
 use Sys::Hostname;
 use Try::Tiny; 
 
-
 with 'App::RaffiWare::Role::IsCmd';
 
 sub needs_init { 0 }; 
@@ -38,15 +37,26 @@ sub _build_pos_args {
   ]
 }
 
-
 sub run {
   my ( $class, $argv ) = @_;
 
-  local $SIG{__DIE__} = sub { ERROR(Carp::longmess(@_)) }; 
-
   my $self = $class->new( argv => $argv );
 
-  DEBUG("cmd_dir: ". $self->cmd_dir );
+  if ( $self->debugging_enabled ) {
+      $SIG{__DIE__} = sub { ERROR(Carp::longmess(@_)) }; 
+  }
+
+  DEBUG('Global Settings');
+  DEBUG( sprintf('  %-30s : %s', 'cmd_dir', $self->cmd_dir ) );
+  DEBUG( sprintf('  %-30s : %s', 'log_level', $self->log_level ) ); 
+  DEBUG( sprintf('  %-30s : %s', 'cfg_file', $self->cfg_file ) ); 
+  foreach (qw|
+     api_hostname
+     api_timeout
+     exc_ws_endpoint
+  |) {
+     DEBUG(sprintf('  %-30s : %s', $_, $self->get_cfg_val($_) ) );
+  }
 
   my $sub_cmd = $self->get_sub_cmd();
 
@@ -68,10 +78,10 @@ sub get_sub_cmd {
   };
 
   return $cmd_class->new( 
-            %{$self->global_cmd_data}, 
-            cmd_dir  => $self->cmd_dir,
-            cfg_file => $self->cfg_file,
-            debug    => $self->debug ); 
+    %{$self->global_cmd_data}, 
+    cmd_dir  => $self->cmd_dir,
+    cfg_file => $self->cfg_file,
+    debug    => $self->debug ); 
 }
 
 sub show_help { my $self = shift; $self->help && !$self->sub_cmd }
@@ -93,13 +103,23 @@ __DATA__
 
 =head1 SUB COMMANDS
 
-=over 4
+=over 12
 
 =item client-init
 
-=item job
+- Initialize and register client.
+
+=item job  
+
+- Execute a specific job.
 
 =item watcher
+
+- Start daemon to automatically fetch and execute new jobs.
+
+=item version
+
+- Print client version
 
 =back 
 
@@ -119,7 +139,7 @@ Client configuration file.
 
 Log debugging information
 
-=item --help
+=item [sub_command] --help
 
 Print this document
 

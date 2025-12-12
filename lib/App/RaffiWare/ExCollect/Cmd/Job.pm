@@ -65,18 +65,19 @@ sub run {
   my $job = $self->load_job( $job_id );
 
   if ( $self->do_fetch && !$job ) {
-      INFO(sprintf('Fetching Job %s data', $job_id ));
 
-      my $job_msg = $self->api->get_job($job_id)
-         or FATAL("Could not load job");
+    INFO(sprintf('Fetching Job %s data', $job_id ));
 
-      $job = $self->init_job($job_msg->{data}); 
+    my $job_msg = $self->api->get_job($job_id)
+       or FATAL("Could not load job");
+
+    $job = $self->init_job($job_msg->{data}); 
   }
   elsif ($self->do_fetch) {
-      WARNING("Job already fetched");
+    WARNING("Job already fetched");
   }
   elsif ( !$job ) {
-      FATAL("Job not found");
+    FATAL("Job not found");
   }
 
   $job->execute() if $self->do_execute();

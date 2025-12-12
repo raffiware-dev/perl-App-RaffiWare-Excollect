@@ -4,6 +4,8 @@
 use lib 'local';
 use lib 'lib';
 
+use URI::ws;
+
 use Mo;
 use Data::Perl::Collection::Array::MooseLike;
 use Data::Perl::Collection::Hash::MooseLike;
@@ -39,4 +41,19 @@ use App::RaffiWare::ExCollect::Cmd::Job;
 use App::RaffiWare::ExCollect::Cmd::Version; 
 use App::RaffiWare::Logger;
 use App::RaffiWare::API; 
-use App::RaffiWare::ExCollect::HostData; 
+use App::RaffiWare::ExCollect::ClientData; 
+
+use Types::Standard::HashRef;
+use Types::Standard::ArrayRef;
+use Types::Standard::CycleTuple;
+use Types::Standard::Dict;
+use Types::Standard::HashRef;
+use Types::Standard::Map;
+use Types::Standard::ScalarRef;
+use Types::Standard::StrMatch;
+use Types::Standard::Tied;
+use Types::Standard::Tuple;
+
+use IO::Tty::Util;
+use JSON::XS;
+use LWP::Protocol::https;

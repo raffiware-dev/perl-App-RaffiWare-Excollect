@@ -6,9 +6,6 @@ use warnings;
 use Moo::Role;
 use Types::Standard qw| :all |;
 
-use App::RaffiWare::API;
-use App::RaffiWare::ExCollect::API;
-
 with  'App::RaffiWare::Role::HasCfg';
 
 has 'api_class' => (
@@ -43,22 +40,24 @@ has 'api' => (
 sub _build_api { 
    my $self = shift;
 
+   require App::RaffiWare::ExCollect::API;
+
    my $api_class   = $self->api_class;
-   my $key_id      = $self->get_cfg_val('host_id');
+   my $key_data    = $self->get_cfg_val('key_data');
    my $private_key = $self->get_cfg_val('private_key'); 
 
    return $api_class->instance( 
-             cmd_cfg      => $self->cmd_cfg,
-             cmd_dir      => $self->cmd_dir,
-             api_hostname => $self->get_cfg_val('api_hostname'),
-             ( $key_id && $private_key )
-               ? ( key_id      => $key_id,
-                   private_key => $private_key
-                 )
-               : (),
-             %{$self->api_args}
+        cmd_cfg      => $self->cmd_cfg,
+        cmd_dir      => $self->cmd_dir,
+        api_hostname => $self->get_cfg_val('api_hostname'),
+        ( $key_data && $private_key )
+          ? ( key_id      => $key_data->{id},
+              private_key => $private_key
+            )
+          : (),
+        %{$self->api_args}
 
-          ); 
+     );
 }
 
 1;

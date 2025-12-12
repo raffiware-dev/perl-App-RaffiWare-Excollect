@@ -22,19 +22,25 @@ has 'args' => (
   is      => 'ro',
   isa     => HashRef,
   default => sub { {} }
-);  
+);
 
 has 'get_opts' => (
   is       => 'ro',
   isa      => ArrayRef,
   builder  => '_build_get_opts'
-); 
+);
 
 has 'pos_args' => (
   is       => 'ro',
   isa      => ArrayRef,
   builder  => '_build_pos_args' 
-);  
+);
+
+# _build_pos_args should return:
+# [
+#   [ $SETTER, $ERROR_MSG|$ERROR_CB, $NORMALIZER_CB, $OPTIONAL ],
+#   ...
+# ]
 
 has 'arg_errors' => (
   is       => 'ro',
@@ -55,10 +61,9 @@ sub parse_argv {
   my $args = $self->args;
   my $p    = Getopt::Long::Parser->new;
 
-  $p->configure( 'pass_through' );  
+  $p->configure( 'pass_through' );
 
   $p->getoptionsfromarray( $argv, $args, @{$self->get_opts} );  
-
 
   foreach my $attr ( keys %$args ) {
     my $val = $args->{$attr};
@@ -74,7 +79,11 @@ sub parse_argv {
     my ( $accessor, $error, $normalizer, $optional ) = @$pos_arg;
     $normalizer ||= sub { @_ };
 
-    if ( (!@$argv and !$optional) or (@$argv and $argv->[0] =~ /^[-]{1,2}/) ) {
+    # Missing positional arguments
+    if ( (!@$argv and !$optional) 
+      or (@$argv and $argv->[0] =~ /^[-]{1,2}/) 
+    ) {
+
       ref($error) eq 'CODE' ? $self->$error() : push( @{$self->arg_errors}, "$error")
     }
     else {
@@ -90,7 +99,7 @@ sub set_pos_arg {
   my ( $self, $attr, $value, $error, $normalizer ) = @_;  
 
   try { $self->$attr( $normalizer ? $normalizer->($value) : $value ) } 
-  catch { push( @{$self->arg_errors}, "$_") } ; #die "$_ $error\n" };
-}  
+  catch { push( @{$self->arg_errors}, "$_") };
+}
 
 1;

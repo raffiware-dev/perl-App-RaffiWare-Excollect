@@ -15,7 +15,7 @@ blocks:
     desc: "Build Dist"
     commands:
       - exec: echo 'building [%version%] in [%cwd%]' 
-      - exec: rm -rf App-RaffiWare-ExCollect-0.* 
+      - exec: rm -rf App-RaffiWare-ExCollect-*
       - exec: rm MANIFEST
       - exec: make clean
       - exec: perl Makefile.PL
@@ -24,23 +24,23 @@ blocks:
       - exec: rm  [%distname%]-[%version%]/cpanfile
       - exec: cp cpanfile.dist  [%distname%]-[%version%]/cpanfile
       - exec: cp cpanfile.dist.snapshot  [%distname%]-[%version%]/cpanfile.snapshot 
-      - exec: ln -s [%cwd%]/distlocal [%distname%]-[%version%]/local   
+      - exec: ln -s [%cwd%]/local [%distname%]-[%version%]/local
         condition: -d [%cwd%]/local
       - exec: cp -R fatlib [%distname%]-[%version%]/fatlib
       - diag: 'changing workdir to [%cwd%]/[%distname%]-[%version%]'
       - dir:  '[%cwd%]/[%distname%]-[%version%]'
-      - exec: perl -MFile::Find -e 'my $strip_pm = sub { if ( /\.pm$/ ) { print "strip $_\n"; system("perlstrip --cache -v $_"); } };  find({ wanted => $strip_pm, no_chdir => 1 }, "lib");'
+      - exec: perl -MFile::Find -e 'my $strip_pm = sub { if ( /\.pm$/ ) { system("perlstrip --cache -v $_"); } };  find({ wanted => $strip_pm, no_chdir => 1 }, "lib");'
       - exec: perl -p -i -e 's/;(our\$VERSION=".+";)\s*(\$VERSION=eval\$VERSION;\s*)/;\n\n$1\n$2\n\n/' lib/App/RaffiWare/ExCollect.pm
       - exec: mkdir bin
       - exec: fatpack file script/exc.PL > bin/exc
       - exec: fatpack file lib/App/RaffiWare/ExCollect/Worker.pm > Worker.pm
       - exec: cp script/anyevent-fork.PL bin/anyevent-fork
       - exec: carton install 
-        condition: '! -L [%cwd%]/[%distname%]-[%version%]/local'
+        #condition: '! -L [%cwd%]/[%distname%]-[%version%]/local'
       - exec: carton bundle
-        condition:  '! -f [%cwd%]/install/vendor-cache.tar.gz'
-      - exec: tar -czvf vendor-cache.tar.gz vendor
-        condition: '! -f [%cwd%]/install/vendor-cache.tar.gz'
+        #condition:  '! -f [%cwd%]/install/vendor-cache.tar.gz'
+      - exec: tar -czvf vendor-cache-[%version%].tar.gz vendor
+        #condition: '! -f [%cwd%]/install/vendor-cache.tar.gz'
       - exec: rm [%var%]
         for-vars:
           - lib/App/RaffiWare/Role/HasLogger.pm
@@ -64,19 +64,15 @@ blocks:
           - lib/App/RaffiWare/Role
           - vendor 
           - binaries 
-      - exec: mv local [%cwd%]
-        condition:  '! -d [%cwd%]/distlocal' 
-      - exec: rm -rf local
-        condition:  ' -d local'
       - exec: rm local
-        condition:  ' -L local'
       - exec: mkdir lib/App/RaffiWare/ExCollect
       - exec: mv Worker.pm lib/App/RaffiWare/ExCollect/Worker.pm
+      - exec: mv vendor-cache-[%version%].tar.gz [%cwd%]/
       - exec: perl Makefile.PL
+      - exec: make test
       - exec: make manifest
       - exec: make dist 
-      - exec: mv vendor-cache.tar.gz [%cwd%]/install/vendor-cache.tar.gz
-        condition: '! -f [%cwd%]/install/vendor-cache.tar.gz' 
       - exec: mv App-RaffiWare-ExCollect-[%version%].tar.gz  [%cwd%]/App-RaffiWare-ExCollect-[%version%].tar.gz 
+      - exec: cp cpanfile.snapshot  [%cwd%]/cpanfile.dist.snapshot
 
 

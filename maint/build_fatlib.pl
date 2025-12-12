@@ -29,7 +29,6 @@ rmtree("fatlib/$Config{archname}");
 
 my $pod_script_del = sub {
     if ( /\.(p(od|l)|txt)$/ ) {
-        print "rm $_\n";
         unlink $_;
     }
 };
@@ -38,7 +37,6 @@ find({ wanted => $pod_script_del, no_chdir => 1 }, "fatlib");
 
 my $strip_pm = sub {
     if ( /\.pm$/ ) {
-        print "strip $_\n";
         system("perlstrip --cache -v $_");
     }
 }; 

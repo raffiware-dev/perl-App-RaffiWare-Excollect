@@ -1,4 +1,4 @@
-package App::RaffiWare::ExCollect::HostData;
+package App::RaffiWare::ExCollect::ClientData;
 
 use strict;
 use warnings;
@@ -7,14 +7,12 @@ use Moo;
 use MooX::HandlesVia;
 use Types::Standard qw| :all |;   
 
-use RaffiWare::APIUtils qw| get_utc_time_stamp get_utc_datetime 
-                            get_timestamp_iso8601 make_uri_uuid |; 
-
 use App::RaffiWare::Logger;
 use App::RaffiWare::Cfg;
 
 use Net::Domain qw|hostfqdn|;
 use Sys::OsRelease;
+use App::RaffiWare::ExCollect;
 
 has 'cmd_dir' => (
   is       => 'ro',
@@ -34,7 +32,7 @@ has 'data_cfg_dir' => (
 sub _build_data_cfg_dir {
   my $self = shift; 
 
-  return sprintf('%s/host_data_cfgs', $self->cmd_dir ); 
+  return sprintf('%s/client_data_cfgs', $self->cmd_dir ); 
 }
 
 
@@ -93,21 +91,26 @@ sub _build_static_data {
    Sys::OsRelease->init();
 
    my $data = [
-        { name        => 'Hostname',
-          description => 'Client systme FQDN',
-          value_type  => 'text',
-          value       => hostfqdn(),
-        },
-        { name        => 'OperatingSystem',
-          description => 'Operating System',
-          value_type  => 'text', 
-          value       =>  Sys::OsRelease->id()  || 'Unknown'
-        }, 
-        { name        => 'OperatingSystemVersion',
-          description => 'Operating System Version',
-          value_type  => 'text', 
-          value       => Sys::OsRelease->version_id() || 'Unknown'
-        } 
+    { name        => 'Hostname',
+      description => 'Client systme FQDN',
+      value_type  => 'text',
+      value       => hostfqdn(),
+    },
+    { name        => 'OperatingSystem',
+      description => 'Operating System',
+      value_type  => 'text', 
+      value       =>  Sys::OsRelease->id()  || 'Unknown'
+    }, 
+    { name        => 'OperatingSystemVersion',
+      description => 'Operating System Version',
+      value_type  => 'text', 
+      value       => Sys::OsRelease->version_id() || 'Unknown'
+    },
+    { name        => 'ExcClientVersion',
+      description => 'Exc Client Version Number',
+      value_type  => 'text', 
+      value       =>  'v'. $App::RaffiWare::ExCollect::VERSION
+    }
    ];
 
    # TODO load custom data attibutes.

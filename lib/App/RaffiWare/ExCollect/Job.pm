@@ -6,7 +6,7 @@ use warnings;
 use Moo;
 use Types::Standard qw| :all |;
 
-use RaffiWare::APIUtils qw| verify_exc_tokens gen_random_string msg_from_tokens|;
+use RaffiWare::APIUtils qw| verify_exc_command verify_exc_tokens |;
 
 use Carp;
 use Cwd qw| abs_path |;
@@ -28,7 +28,7 @@ use App::RaffiWare::ExCollect::Job::Logger;
 
 with 'App::RaffiWare::Role::HasLogger',
   'App::RaffiWare::Role::HasAPIClient',
-  'App::RaffiWare::ExCollect::Role::HasHostData';
+  'App::RaffiWare::ExCollect::Role::HasClientData';
 
 has '+api_class' => ( default => sub { 'App::RaffiWare::ExCollect::API' } );
 
@@ -101,15 +101,14 @@ sub _load_job_state {
   my $state_file = sprintf( '%s/state', $self->job_dir );
 
   my $state = try {
-                my $cfg = App::RaffiWare::Cfg->new( cfg_storage => 'json',  cfg_file => $state_file );
-                $cfg->json; # testing json
+      my $cfg = App::RaffiWare::Cfg->new( cfg_storage => 'json',  cfg_file => $state_file );
 
-                $cfg;
-              }
-              catch {
-                # Old job configs might be yaml
-                App::RaffiWare::Cfg->new( cfg_file => $state_file ); 
-              };
+      $cfg;
+    }
+    catch {
+      # Old job configs might be yaml
+      App::RaffiWare::Cfg->new( cfg_file => $state_file ); 
+    };
 
   return $state;
 }
@@ -137,12 +136,12 @@ sub _build_job_logger {
   my $log_level = $self->get_job_val('log_level') || 'info';
 
   return App::RaffiWare::ExCollect::Job::Logger->new(
-           job_id  => $self->job_id,
-           job_dir => $self->job_dir,
-           api     => $self->api,
-           cmd_cfg => $self->cmd_cfg,
-           level   => $log_level
-         );
+    job_id  => $self->job_id,
+    job_dir => $self->job_dir,
+    api     => $self->api,
+    cmd_cfg => $self->cmd_cfg,
+    level   => $log_level
+  );
 }
 
 has 'stdout_handler' => (
@@ -161,8 +160,8 @@ sub _build_stdout_handler {
     my $data = shift;
 
     {
-        use bytes;
-        $total_bytes += length($data)
+      use bytes;
+      $total_bytes += length($data)
     }
 
     $self->log_job_message( 'stdout', $data, $total_bytes );
@@ -185,8 +184,8 @@ sub _build_stderr_handler {
     my $data = shift;
 
     {
-        use bytes;
-        $total_bytes += length($data)
+      use bytes;
+      $total_bytes += length($data)
     } 
 
     $self->log_job_message( 'stderr', $data, $total_bytes );
@@ -236,15 +235,15 @@ sub _build_final_command_string {
   my $instance    = $self->get_job_val('instance');
   my $type        = $instance->{execute_type};
 
-  my @hostvs = $string =~ /\Q${HOSTV_START}\E(.+?)\Q$HOSTV_END\E/g;
+  my @clientvs = $string =~ /\Q${HOSTV_START}\E(.+?)\Q$HOSTV_END\E/g;
 
-  if (@hostvs) {
+  if (@clientvs) {
 
     my %extra_vars = ( ClientName => $client_name );
 
     $string = $self->final_tts->compile(
-      $string . ' ',    # HACK Ensure string is not inferred to be file path.
-      [ map { ( $_ => $extra_vars{$_} // $self->get_host_data_val($_) // 'UNDEFINED' ) } @hostvs, ],
+      $string .' ',    # HACK Ensure string is not inferred to be file path.
+      [ map { ( $_ => $extra_vars{$_} // $self->get_client_data_val($_) // 'UNDEFINED' ) } @clientvs, ],
       {
         map_keys => 1
       }
@@ -255,14 +254,15 @@ sub _build_final_command_string {
   if ( $type eq 'script' ) {
 
     my $bin    = sprintf( '%s/script', abs_path( $self->job_dir ) );
-    my $source = $instance->{script_src} or FATAL( 'No script source for ' . $self->job_id );
+    my $source = $instance->{script_src} or FATAL( 'No script source for '. $self->job_id );
 
-    open my $bin_fh, '>', $bin or FATAL( 'Failed to create script bin file for ' . $self->job_id );
+    open my $bin_fh, '>', $bin or FATAL( 'Failed to create script bin file for '. $self->job_id );
     print $bin_fh $source;
     close $bin_fh;
 
     chmod 0755, $bin;
 
+    # With the script type the arguments are are stored as the command_string
     $string = "$bin $string";
   }
 
@@ -280,7 +280,8 @@ sub init {
   }
 
   $job->set_job_val(
-          %$job_cfg{qw| id status command_string priority archived command instance client_name |} );
+          %$job_cfg{qw| id status command_string priority 
+                        job_signature archived instance client_name |} );
 
   return $job;
 }
@@ -315,17 +316,22 @@ sub execute {
     $self->watcher_exit( 1, "Cannot execute command with status: $status" );
   }
 
-  if ( !$self->verify_command_signature() ) {
+  try { 
+    $self->verify_command_signature() or die('Signature Failed') 
+  }
+  catch {
+
     $self->set_job_val( status => 'error' );
-    $self->log_job_message( 'error', "Command Instance signature validation failed" );
+    $self->log_job_message( 'error', "Command Instance signature validation failed: $_" );
     $self->api->update_job( $job_id, { status => 'error' } );
 
-    $self->watcher_exit( 1, "Command Instance signature validation failed" );
-  }
+    $self->watcher_exit( 1, "Command Instance signature validation failed: $_" );
+  };
 
   INFO("Starting job $job_id");
 
   my $final_command = $self->final_command_string();
+
   DEBUG("Final command $final_command");
 
   my ( $final_bin, @final_args ) = shellwords($final_command);
@@ -353,7 +359,7 @@ sub execute {
 
     # TODO eval alarm timeout
 
-    $PROGRAM_NAME = 'exc: ' . $job_id;
+    $PROGRAM_NAME = "exc: $job_id";
 
     close $to_parent;
     close $to_parent_err;
@@ -367,7 +373,9 @@ sub execute {
     my $child_exit = $self->watch_child( $pid, $pipes );
     my $status     = $child_exit ? 'error' : 'complete';
 
-    $self->log_job_message( 'warning', "Exec exit $child_exit" ) if $child_exit;
+    $self->log_job_message( 'warning', "Exec exit $child_exit" ) 
+      if $child_exit;
+
     $self->set_status($status);
     $self->set_job_val( exit => $child_exit );
 
@@ -439,6 +447,7 @@ sub watch_child {
     binmode($fh);
 
     vec( $rin, $fn, 1 ) = 1;
+
     $handles->{$fn} = $_;
   }
 
@@ -466,7 +475,7 @@ sub watch_child {
       # Exponential backoff for polling so we don't
       # hammer the API on long running commands.
       # A randomized value is added each iteration to
-      # help prevent stampeding from multiple hosts running the
+      # help prevent stampeding from multiple clients running the
       # same command..
       # We also set an upper bound on $delay, which should
       # limit the delay to a value between some where between
@@ -516,8 +525,10 @@ sub poll_handle {
   $cb->($buf) if $buf;
 
   if ( !$rv and $read_error != EAGAIN ) {
+
     delete $handles->{$fn};
     close $fh;
+
     return undef;
   }
 
@@ -538,7 +549,7 @@ sub _fork {
 sub watcher_exit {
   my ( $self, $exit_code, $msg ) = @_;
 
-  my $full_msg = sprintf( '%s exit: %i - %s', $self->job_id, $exit_code, $msg );
+  my $full_msg = sprintf('%s exit: %i - %s', $self->job_id, $exit_code, $msg );
 
   if ($exit_code) {
     WARNING($full_msg);
@@ -564,38 +575,48 @@ sub set_status {
 sub verify_command_signature {
   my ($self) = @_;
 
-  my $job_id   = $self->job_id;
-  my $instance = $self->get_job_val('instance');
-  my $command  = $self->get_job_val('command');
+  my $client_id   = $self->get_cfg_val('client_id'); 
+  my $job_id    = $self->job_id;
+  my $instance  = $self->get_job_val('instance');
+  my $job_sig   = $self->get_job_val('job_signature'); 
+  my $command   = $instance->{command};
+  my $signed_by = $instance->{signed_by}; 
+  my $key_id    = $instance->{signed_by_key_id};
 
-  my $pub_key_data = $self->api->get_command_user_key( $job_id, $instance->{'signed_by'} );
+  my $pub_key_data = $self->api->get_command_user_key( $job_id, $signed_by, $key_id );
 
   if ( !$pub_key_data ) {
     ERROR("$job_id - Failed to get signed_by user public key");
     return 0;
   }
 
+  verify_exc_command(
+    instance_id         => $instance->{id},
+    site_id             => $instance->{site},
+    site_user_id        => $signed_by,
+    created_ts          => $instance->{created_datetime},
+    execute_type        => $instance->{execute_type},
+    command_string      => $instance->{command_string},
+    command_id          => $command->{id},
+    key_id              => $key_id,
+    script_src          => $instance->{script_src},
+    site_user_signature => $instance->{site_user_signature},
+    public_key          => $pub_key_data->{public_key}
+  ) or return;
+
+  TRACE('valid instance signature');
+
   my $tokens = {
-    instance_id    => $instance->{id},
-    site_id        => $instance->{'site'},
-    site_user_id   => $instance->{'signed_by'},
-    created_ts     => $instance->{'created_datetime'},
-    command_string => $instance->{'command_string'},
-    command_id     => $command->{id},
-    key_id         => $pub_key_data->{key_id},
+    client_id      => $client_id,
+    job_id       => $job_id,
+    instance_sig => $instance->{site_user_signature}
   };
 
-  my $type = $instance->{execute_type};
+  verify_exc_tokens( $tokens, $job_sig, $pub_key_data->{public_key} ) or return;
 
-  if ( $type eq 'script' ) {
-    $tokens->{command_string} .= sha256_hex( $instance->{script_src} );
-  }
+  TRACE('valid job signature');
 
-  DEBUG( 'TOKENS ' . msg_from_tokens($tokens) );
-
-  my $pub_key_string = $pub_key_data->{public_key};
-
-  return verify_exc_tokens( $tokens, $instance->{'site_user_signature'}, $pub_key_string );
+  return 1;
 }
 
 sub archive {

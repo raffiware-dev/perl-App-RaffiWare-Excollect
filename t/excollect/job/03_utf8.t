@@ -1,13 +1,11 @@
 #!/usr/bin/env perluse strict;
 use warnings;
-#use utf8;
+use utf8;
 use open qw( :std :encoding(UTF-8) );
 
 BEGIN { 
 
-  use FindBin;
-  my $fatbin = "$FindBin::Bin/../bin/exc"; 
-  require $fatbin if -f $fatbin;
+  require App::RaffiWare::ExCollect::Worker;  
 
   use lib qw|t/lib|;
   use Test::ExCollectWorker; # disabled command_verification
@@ -39,6 +37,8 @@ my $pushkin = do {
 
    use utf8;
 
+# This is just supposed to be Cyrillic Lorem Ispum
+# I'm sorry if it ends up being something bad.
    <<'END';
 На берегу пустынных волн
 Стоял он, дум великих полн,
@@ -55,17 +55,18 @@ END
 };
 
 my $job = App::RaffiWare::ExCollect::Job->init(
-              { 
-                 id             => $job_id,
-                 status         => 'queued',
-                 command_string => qq|/usr/bin/echo -n "$pushkin"|,
-                 priority       => 1,
-                 instance => {
-                    execute_type   => 'bin',
-                 }
-              },
-              cfg_file   => 't/excollect/exc.cfg',
-              cmd_dir    => 't/excollect/job' );
+  { 
+     id             => $job_id,
+     status         => 'queued',
+     command_string => qq|/usr/bin/echo -n "$pushkin"|,
+     priority       => 1,
+     instance => {
+        execute_type   => 'bin',
+     }
+  },
+  cfg_file   => 't/excollect/exc.cfg',
+  cmd_dir    => 't/excollect/job' 
+);
 
 
 isa_ok($job, 'App::RaffiWare::ExCollect::Job'); 
@@ -97,19 +98,19 @@ END
 
 $job_id = 'chj_75t9542gf0b04239b67e71d160c3694b'; 
 
-
 $job = App::RaffiWare::ExCollect::Job->init(
-              { 
-                 id             => $job_id,
-                 status         => 'queued',
-                 command_string => qq|/bin/bash -c 'echo -n "$rune" 1>&2'|,
-                 priority       => 1,
-                 instance => {
-                    execute_type   => 'bin',
-                 }
-              },
-              cfg_file   => 't/excollect/exc.cfg',
-              cmd_dir    => 't/excollect/job' );
+  { 
+     id             => $job_id,
+     status         => 'queued',
+     command_string => qq|/bin/bash -c 'echo -n "$rune" 1>&2'|,
+     priority       => 1,
+     instance => {
+        execute_type   => 'bin',
+     }
+  },
+  cfg_file   => 't/excollect/exc.cfg',
+  cmd_dir    => 't/excollect/job' 
+);
 
 
 isa_ok($job, 'App::RaffiWare::ExCollect::Job'); 
@@ -119,16 +120,10 @@ $job->execute();
 $stderr_file = $job->job_logger->stderr_file;
 $stderr = do { local $/ = undef; open my $stderr_fh, '<:encoding(UTF-8)', $stderr_file; <$stderr_fh> };
 
-diag $stderr;
-
 is $stderr, $rune, 'UTF-8 STDERR';
-
 
 $status = $job->get_job_val('status');
 
 is $status, 'complete', 'job status complete'; 
- 
- 
- 
 
 done_testing(); 

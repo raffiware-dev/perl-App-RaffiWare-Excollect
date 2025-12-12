@@ -37,5 +37,11 @@ packlists
 fatlib
 workdir
 .dex*
+log
+watcher.pid
+.lock
+t/key_schema.yml
+keys
+.bash_history
 
 App-RaffiWare-ExCollect-.*

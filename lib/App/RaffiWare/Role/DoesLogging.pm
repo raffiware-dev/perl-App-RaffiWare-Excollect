@@ -4,7 +4,7 @@ use strict;
 use warnings;  
 
 use Moo::Role; 
-use Types::Standard qw| :all |;   
+use Types::Standard qw| :all |;
 
 my %LEVEL_MAP = (
    trace     => 1,
@@ -18,7 +18,7 @@ sub LEVEL_MAP {
   return \%LEVEL_MAP
 }
 
-has 'level' => (
+has 'log_level' => (
   is       => 'ro',
   isa      => Str,
   default  => sub { 'info' },
@@ -46,9 +46,17 @@ sub log_message {
 
   my $level_map = $self->LEVEL_MAP;
 
-  return unless $level_map->{$level} and $level_map->{$level} >= $level_map->{$self->level};
+  return unless $level_map->{$level} and $level_map->{$level} >= $level_map->{$self->log_level};
 
   $self->msg_handler->($self, $level, $msg, @args);
+}
+
+sub debugging_enabled {
+  my ( $self ) = @_; 
+
+  my $level_map = $self->LEVEL_MAP; 
+
+  return ( $level_map->{$self->log_level} <= $level_map->{debug} );
 }
 
 

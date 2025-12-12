@@ -15,7 +15,7 @@ use_ok('App::RaffiWare::Logger');
 
 unlink "t/log";  
 
-my $logger = App::RaffiWare::Logger->instance( level => 'info', log_dir => 't/' );
+my $logger = App::RaffiWare::Logger->instance( log_level => 'info', log_dir => 't/' );
 
 $logger->log_message('info',  'test log');
 $logger->log_message('debug',  'disabled debug log'); 

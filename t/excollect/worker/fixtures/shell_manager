@@ -1,0 +1,26 @@
+---
+user_1:
+  key_data:
+    context:
+      api: excollect
+      site: 57ff01f0-8cb7-4af1-8a23-c065c13e364e
+      site_user: 3c43db5c-10e4-4653-92e1-35739b167aa4
+    created: 2025-10-11T19:00:45.098+00:00
+    expires: 2030-10-11T19:00:45.098+00:00
+    id: exck_8c7750cc9dac41da99e94c3a55b43db5
+    key_type: 3
+    owner_id: au_4ec2a48354884fdfb4336a84c30ef1b6
+    public_key: MCowBQYDK2VwAyEAU0ipeCoRayLDVFid9fNYWCo3jkNwQ0PCp441RGZM5N0
+    signature: sgAmffDx-9c2wlZfSjiDe35pglvVKbuAuwQPylQ7M6xhN01bOjENyppfz80wytVZDnbipVCZrG1n-XqVUjs7CA
+    signed_by:
+      context:
+        api: ca
+      created: 2025-10-11T19:00:45.093+00:00
+      expires: 2027-10-11T19:00:45.093+00:00
+      id: cak_4191090daf844f70b195c0da8cc70101
+      key_type: 99
+      owner_id: ca_4191090daf844f70b195c0da8cc70000
+      public_key: MCowBQYDK2VwAyEAebETyNi4IOvYh5rHoTq0RhO12YYE06wHgTPBgSSXdEc
+      signature: MCs8-FR5T3RuUBJO4msOgCFJrO5w_Nx0E8irl25gY1c8TKaJ5VjKsGOvAloYg8THjtZkKbqc4oJV0T7RaEbBCA
+      signed_by: cak_7731a1bac4e74d3e9dc6afcbb62f0001
+  private_key: MC4CAQAwBQYDK2VwBCIEIEXJ7mtv9Pc1frdLYqvcKL1r9U-TeyxY3MNeTa20CQbO

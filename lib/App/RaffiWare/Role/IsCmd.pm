@@ -1,15 +1,13 @@
 package App::RaffiWare::Role::IsCmd;
 
-
 use strict;
-use warnings;  
+use warnings;
 
 use Moo::Role;
 use Types::Standard qw| :all |;
 
 use App::RaffiWare::Cfg;
 use App::RaffiWare::Logger;
-use App::RaffiWare::API;
 
 use File::HomeDir;
 use Pod::Text;
@@ -21,7 +19,7 @@ has 'home_dir' => (
   isa     => Str,
   lazy    => 1,
   builder => '_build_home_dir'
-);   
+);
 
 sub _build_home_dir { File::HomeDir->my_home } 
 
@@ -31,10 +29,9 @@ has 'cmd_dir' => (
   lazy    => 1,
   writer  => '_set_cmd_dir', 
   builder => '_build_cmd_dir'
-);   
+);
 
 sub _build_cmd_dir { shift->home_dir .'/.exc'; }
-
 
 has 'help' => (
   is       => 'ro',
@@ -42,10 +39,9 @@ has 'help' => (
   lazy     => 1,
   default  => sub { 0 },
   writer   => '_set_help',
-);  
+);
 
 sub show_help { shift->help }
-
 
 has 'global_cmd_data' => (
   is      => 'ro',
@@ -95,9 +91,8 @@ sub print_help {
 
    print "\n". $self->get_help_data();
    exit(0);
-
 }
- 
+
 sub get_help_data {
   my $self = shift;
 
@@ -127,28 +122,28 @@ sub BUILD {
 
   $self->print_help() if $self->show_help;
 
-  if ($self->needs_init) { 
-     warn("\nMust run host-init first\n\n");
+  if ($self->needs_init) {
+
+     warn("\nMust run client-init first\n\n");
      exit(1);
   }
 
   if ( my ($error) = @{$self->arg_errors} )  {
+
       warn "\n$error\n\n";
       warn $self->get_help_data();
       exit(1); 
   }
-
 }
-
 
 sub needs_init { !shift->is_initialized() };
 
-sub is_initialized {  
-    my $self = shift;
+sub is_initialized {
+  my $self = shift;
 
-    return 0 if !-f $self->cfg_file;
+  return 0 if !-f $self->cfg_file;
 
-    return 1;
+  return 1;
 }
 
 1;

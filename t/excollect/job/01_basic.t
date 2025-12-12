@@ -1,12 +1,11 @@
 #!/usr/bin/env perl
+
 use strict;
 use warnings;
 
 BEGIN { 
 
-  use FindBin;
-  my $fatbin = "$FindBin::Bin/../bin/exc"; 
-  require $fatbin if -f $fatbin;
+  require App::RaffiWare::ExCollect::Worker; 
 
   use lib qw|t/lib|;
   use Test::ExCollectWorker; # disabled command_verification
@@ -37,17 +36,18 @@ rmtree "t/excollect/job/archive/$job_id";
 mkdir 't/excollect/job/jobs';
 
 my $job = App::RaffiWare::ExCollect::Job->init(
-              { 
-                 id             => $job_id,
-                 status         => 'queued',
-                 command_string => '/bin/uptime',
-                 priority       => 1,
-                 instance => {
-                    execute_type   => 'bin',
-                 }
-              },
-              cfg_file   => 't/excollect/exc.cfg',
-              cmd_dir    => 't/excollect/job' );
+  { 
+     id             => $job_id,
+     status         => 'queued',
+     command_string => '/bin/uptime',
+     priority       => 1,
+     instance => {
+        execute_type   => 'bin',
+     }
+  },
+  cfg_file   => 't/excollect/exc.cfg',
+  cmd_dir    => 't/excollect/job' 
+);
 
 
 isa_ok($job, 'App::RaffiWare::ExCollect::Job'); 
@@ -73,17 +73,18 @@ rmtree "t/excollect/job/jobs/$job_id";
 rmtree "t/excollect/job/archive/$job_id"; 
 
 $job = App::RaffiWare::ExCollect::Job->init(
-           { 
-              id             => $job_id,
-              status         => 'queued',
-              command_string => q|/usr/bin/env perl -e 'print "Hello World\n"; die("Goodbye World\n")'  |,
-              priority       => 1,
-              instance => {
-                 execute_type   => 'bin',
-              } 
-           },
-           cfg_file   => 't/excollect/exc.cfg', 
-           cmd_dir    => 't/excollect/job' );
+  { 
+     id             => $job_id,
+     status         => 'queued',
+     command_string => q|/usr/bin/env perl -e 'print "Hello World\n"; die("Goodbye World\n")'  |,
+     priority       => 1,
+     instance => {
+        execute_type   => 'bin',
+     } 
+  },
+  cfg_file   => 't/excollect/exc.cfg', 
+  cmd_dir    => 't/excollect/job' 
+);
 
 $job->execute();
 

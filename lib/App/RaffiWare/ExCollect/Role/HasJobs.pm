@@ -6,10 +6,7 @@ use warnings;
 use Moo::Role; 
 use Types::Standard qw| :all |;
 
-use App::RaffiWare::ExCollect::Job;
 use App::RaffiWare::Cfg;
-
-use App::RaffiWare::Logger; 
 
 has 'jobs_dir' => (
   is    => 'ro',
@@ -41,9 +38,16 @@ sub _build_jobs {
 
    while ( my $job_id_dir = readdir $jobs_dir ) {
 
-       next if !-f $self->jobs_dir . '/' . $job_id_dir .'/state'; 
+     my $state_file = $self->jobs_dir . '/' . $job_id_dir .'/state';
 
-       push @jobs, $self->load_job($job_id_dir);
+     next if !-f $state_file; 
+
+     my $cfg = App::RaffiWare::Cfg->new( cfg_storage => 'json',  cfg_file => $state_file ); 
+
+     next if !$cfg->lock;
+     next if $cfg->get('status') ne 'queued';
+
+     push @jobs, $job_id_dir;#$self->load_job($job_id_dir);
    }
 
    closedir $jobs_dir;
@@ -54,17 +58,22 @@ sub _build_jobs {
 sub init_job {
   my ($self, $job_data) = @_; 
 
+  require App::RaffiWare::ExCollect::Job; 
+
   App::RaffiWare::ExCollect::Job->init( 
     {
-       %{$job_data}{qw| id status priority |},
+       %{$job_data}{qw| id status priority job_signature |},
        command_string => $job_data->{command_instance}->{command_string},
        instance_id    => $job_data->{command_instance}->{id},
-       client_name    => $job_data->{host}->{hostname},
-       command => {
-         %{$job_data->{command_instance}->{command}}{qw| id  |}, 
-       },
+       client_name    => $job_data->{client}->{name},
        instance => {
-         %{$job_data->{command_instance}}{qw| id created_datetime site signed_by site_user_signature command_string |},
+         command => {
+           %{$job_data->{command_instance}->{command}}{qw| id  |}, 
+         }, 
+         %{$job_data->{command_instance}}{qw| 
+           id created_datetime site signed_by
+           signed_by_key_id site_user_signature command_string 
+         |},
          execute_type => $job_data->{command_instance}->{attributes}->{execute_type}->{value},
          script_src   => $job_data->{command_instance}->{attributes}->{script_src}->{value} || '',
        }
@@ -80,6 +89,8 @@ sub load_job {
   my ($self, $job_id, %args) = @_;
 
   return if !-f sprintf('%s/state', $self->get_job_dir($job_id) ); 
+
+  require App::RaffiWare::ExCollect::Job;  
 
   return App::RaffiWare::ExCollect::Job->new( 
            job_id   => $job_id, 

@@ -1,0 +1,5 @@
+{
+  "client_id": "h_test",
+  "local_only": 1,
+  "api_hostname": "http://localhost"
+}

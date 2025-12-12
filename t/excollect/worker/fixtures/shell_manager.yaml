@@ -1,0 +1,61 @@
+---
+authority:
+  context:
+    api: ca
+  created: 2025-10-11T19:08:45.842+00:00
+  expires: 2045-10-11T19:08:45.842+00:00
+  id: cak_c262cea52ed44f9c830087e169a70001
+  key_type: 99
+  owner_id: ca_c262cea52ed44f9c830087e169a70000
+  public_key: MCowBQYDK2VwAyEAtlVecpfWXJnzKxU0mMNE7EX7bnnZ5IbM6ujGYdyKXIk
+  signature: AYTOvLGCOgpZ6oFcQ_1TEIGibrUoQV6poSz_KuIPPWxnMRCp88KXYi5uss2lhxIIXWVKKBlvW0njRmqSzzxTAA
+  signed_by: cak_c262cea52ed44f9c830087e169a70001
+user_1:
+  key_data:
+    context:
+      api: excollect
+      site: 32ec18ff-e4ee-4028-af19-a19418e8b26b
+      site_user: e3234f82-c9b5-4e65-aebe-a3e94fadad81
+    created: 2025-10-11T19:08:45.853+00:00
+    expires: 2030-10-11T19:08:45.853+00:00
+    id: exck_ba0f2264c142421aba0150b3a47caadd
+    key_type: 3
+    owner_id: au_d2f0a74bc2524427bd1cce45cf429fbe
+    public_key: MCowBQYDK2VwAyEASOM60ixFyry-JbXH_N06GlJy0Uc5SFqnwmaWbf24TiE
+    signature: -Budcii6sbLUvE7d63ak5WrqKXHLaanDSxRHQSuU2sSbsr6bnTcxBAnSiXjrsdDt7-acyq2063S1K1LfXbztCA
+    signed_by:
+      context: &1
+        api: ca
+      created: 2025-10-11T19:08:45.848+00:00
+      expires: 2027-10-11T19:08:45.848+00:00
+      id: cak_ace8fabed1414900aefb994964780101
+      key_type: 99
+      owner_id: ca_ace8fabed1414900aefb994964780000
+      public_key: MCowBQYDK2VwAyEA73kfwHQucZUVs0cWTXaiAkcKKboFDjyogiBJB9s9BZw
+      signature: dNarEJVNqUnm0b6TngBJVw61smIPtZMRPLml461_70mDOJul_x4B06clzc8PqTU2dWPSDOmZFyU9HUMy3H8jCA
+      signed_by: cak_c262cea52ed44f9c830087e169a70001
+  private_key: MC4CAQAwBQYDK2VwBCIEIHkMTJE0w0pttvKzFqj4GUSlhvdT2KbXfUvYd7ZbQf8E
+user_2:
+  key_data:
+    context:
+      api: excollect
+      site: 32ec18ff-e4ee-4028-af19-a19418e8b26b
+      site_user: 39fedfa9-5fb9-49fe-90d2-43d3b6adfb61
+    created: 2025-10-11T19:08:45.860+00:00
+    expires: 2030-10-11T19:08:45.860+00:00
+    id: exck_9918cad64e3c4c6d9227f3836fb00046
+    key_type: 3
+    owner_id: au_59d819b34a2942fe9c7858377aeac02b
+    public_key: MCowBQYDK2VwAyEALhc3Fg85txvaMp128pM2NqqbmYHvFtbrm75p3Ty3nSc
+    signature: weWSE5l9Q3ycMJOXKlr3tch-xMkKpXHKCcXM16DTR61_rs-7-5p20aOe9A_PmbRrJX4yYFfENOpsOXAno4cnBA
+    signed_by:
+      context: *1
+      created: 2025-10-11T19:08:45.848+00:00
+      expires: 2027-10-11T19:08:45.848+00:00
+      id: cak_ace8fabed1414900aefb994964780101
+      key_type: 99
+      owner_id: ca_ace8fabed1414900aefb994964780000
+      public_key: MCowBQYDK2VwAyEA73kfwHQucZUVs0cWTXaiAkcKKboFDjyogiBJB9s9BZw
+      signature: dNarEJVNqUnm0b6TngBJVw61smIPtZMRPLml461_70mDOJul_x4B06clzc8PqTU2dWPSDOmZFyU9HUMy3H8jCA
+      signed_by: cak_c262cea52ed44f9c830087e169a70001
+  private_key: MC4CAQAwBQYDK2VwBCIEIEpRdwvl7dLwZ_WNLwkKlBx4jhTgshXMsPeyw-iFXKLz

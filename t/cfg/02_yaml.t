@@ -1,28 +1,25 @@
 #!/usr/bin/env perl
+
 use strict;
 use warnings;
 
+BEGIN { require App::RaffiWare::ExCollect::Worker; }; 
 
-use Test::More;
+use Test::Most;
 use Text::Diff;
 
-BEGIN { 
+use App::RaffiWare::Cfg;
 
-  require App::RaffiWare::ExCollect::Worker;
-
-}; 
-
-use_ok('App::RaffiWare::Cfg');
-
-my $cfg_file = "t/test.cfg";
+my $cfg_file = "t/cfg/test.yaml";
+my $bad_cfg_file = "t/cfg/test_bad.yaml";
 
 unlink $cfg_file;
 
-my $cfg = App::RaffiWare::Cfg->new( cfg_file =>  $cfg_file );  
+my $cfg = App::RaffiWare::Cfg->new( cfg_file =>  $cfg_file );
 
 $cfg->set( short_text => 'hi planet' ); 
 
-my $long_str =<<'END';;
+my $long_str =<<'END';
 some big long
 string of multi
 line test here
@@ -45,9 +42,7 @@ my $diffs = diff(\$expected_cfg, $cfg_fh);
 
 ok !$diffs, 'expected config file';
 
-diag explain $diffs;
-
-$cfg = App::RaffiWare::Cfg->new( cfg_file =>  $cfg_file );   
+$cfg = App::RaffiWare::Cfg->new( cfg_file =>  $cfg_file ); 
 
 is $cfg->get('long_text'), $long_str, 'got config value';
 
@@ -82,22 +77,31 @@ close $cfg_fh;
 
 ok !$diffs, 'expected config file';
 
-diag explain $diffs;
+$cfg->delete('short_text');
 
-$cfg_file = $cfg_file .'.json' ;
-$cfg = App::RaffiWare::Cfg->new( cfg_storage => 'json', cfg_file =>  $cfg_file );
+$expected_cfg =<<'END';
+---
+long_text: |+
+  some big long
+  string of multi
+  line test here
+  
 
-$cfg->set( short_text => 'in_json' );
-$cfg->set( multiline_text => $long_str );
+END
 
 open $cfg_fh, '<', $cfg_file or die $!;
 
-diag do { local $/; <$cfg_fh> };
+$diffs = diff(\$expected_cfg, $cfg_fh);
 
-close $cfg_fh; 
+close $cfg_fh;
 
-$cfg = App::RaffiWare::Cfg->new( cfg_storage => 'json', cfg_file =>  $cfg_file ); 
+ok !$diffs, 'key deleted';
 
-is $cfg->get('multiline_text'), $long_str, 'got multiline string back';
+is ref($cfg->data), 'HASH', 'data';  
 
-done_testing(); 
+throws_ok { App::RaffiWare::Cfg->new( cfg_file =>  $bad_cfg_file );}
+          qr|^Config file t/cfg/test_bad.yaml failed to load with error: YAML Error:|,
+          'expected error on badly formatted config';
+
+
+done_testing();

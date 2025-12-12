@@ -1,6 +1,9 @@
 use File::HomeDir;
 my $home = File::HomeDir->my_home;
 
+use Cwd;
+my $cwd = getcwd;
+
 
 requires 'Config::YAML';
 requires 'Config::JSON'; 
@@ -10,6 +13,7 @@ requires 'HTTP::Request';
 requires 'HTTP::Request::Common';
 requires 'HTTP::Thin';
 requires 'JSON';
+requires 'JSON::XS';
 requires 'Module::Runtime';
 requires 'Moo';
 requires 'MooX::Singleton';
@@ -30,12 +34,22 @@ requires 'Text::Template::Simple';
 requires 'IO::Socket::SSL';
 requires 'Crypt::Random';
 requires 'Specio', '>= 0.50';
+requires 'AnyEvent::WebSocket::Client';
+requires 'Scalar::Util';
+requires 'IO::Stty';
+requires 'IO::Tty';
+requires 'Unicode::Escape';
+requires 'IO::Tty::Util';
+requires 'LWP::Protocol::https';
+requires 'Crypt::RFC8188';
 
 requires 'RaffiWare::APIUtils', '>= 0.001',
-  dist   => 'RAFFIWARE/RaffiWare-APIUtils-0.002001.tar.gz',
-  mirror => "file://$home/darkpan/"; 
+  dist   => 'RAFFIWARE/RaffiWare-APIUtils-0.002003.tar.gz',
+  mirror => "file://$home/darkpan/",
+  url    => "file://$cwd/RaffiWare-APIUtils-0.002003.tar.gz"; 
 
 on 'test' => sub {
+  requires 'Test::Most';
   requires 'Test::Deep';
   requires 'Text::Diff'; 
 };
@@ -45,6 +59,7 @@ on 'build' => sub {
    requires 'Sys::GNU::ldconfig';
    requires 'PAR::Packer';
    requires 'local::lib';
+   requires 'Perl::Strip';
 }
 
 

@@ -12,6 +12,7 @@ requires 'DateTime';
 requires 'XString';
 requires 'Math::Pari';
 requires 'CryptX';
+requires 'Crypt::RFC8188';
 requires 'Clone';
 requires 'List::MoreUtils::XS';
 requires 'Proc::FastSpawn';
@@ -27,6 +28,12 @@ requires 'Guard';
 requires 'Array::Heap'; 
 requires 'AnyEvent::Fork'; # Won't work in fatpack, AnyEvent::Fork calls this with perl -M
                            # when setting up worker processes.
+requires 'IO::Stty';
+requires 'IO::Tty';
+requires 'Unicode::Escape';
+requires 'IO::Tty::Util';
+requires 'LWP::Protocol::https';
+requires 'JSON::XS';
 
 on test => sub {
   requires 'Text::Diff';

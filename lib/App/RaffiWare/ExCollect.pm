@@ -1,7 +1,7 @@
 package App::RaffiWare::ExCollect;
 
 
-our $VERSION = "0.003002"; 
+our $VERSION = "0.003011"; 
 $VERSION = eval $VERSION; 
 
 
@@ -11,7 +11,7 @@ App::RaffiWare::ExCollect - ExCollect Client
 
 =head1 VERSION
 
-Version 0.001
+Version 0.003008
 
 =head1 SYNOPSIS
 

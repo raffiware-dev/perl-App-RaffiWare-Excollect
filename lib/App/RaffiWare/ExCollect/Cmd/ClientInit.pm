@@ -32,8 +32,15 @@ has 'api_hostname' => (
   predicate => 'has_api_hostname'
 );  
 
+has 'ws_endpoint' => (
+  is        => 'ro',
+  isa       => Str,
+  writer    => '_set_ws_endpoint',
+  predicate => 'has_ws_endpoint'
+); 
+
 sub _build_get_opts {
-  [ qw|  api-hostname=s help | ] 
+  [ qw|  api-hostname=s ws-endpoint=s help | ] 
 }
 
 sub _build_pos_args {
@@ -45,7 +52,7 @@ sub _build_pos_args {
 sub is_registered { 
    my $self = shift;  
 
-   return ($self->is_initialized && $self->get_cfg_val('host_id')); 
+   return ($self->is_initialized && $self->get_cfg_val('client_id')); 
 }
 
 sub run {
@@ -64,7 +71,7 @@ sub run {
 
   $self->fetch_authority_key();
 
-  $self->register_host();
+  $self->register_client();
 
   INFO('Registration complete');
 
@@ -76,11 +83,14 @@ sub init_cfg {
   my ( $self ) = @_;  
 
   $self->set_cfg_val( 
-            $self->cmd_cfg->cfg_defaults,
-            $self->has_api_hostname
-              ? ( api_hostname => $self->api_hostname )
-              : (),
-            );
+    $self->cmd_cfg->cfg_defaults,
+    $self->has_api_hostname
+      ? ( api_hostname => $self->api_hostname )
+      : (),
+    $self->has_ws_endpoint
+      ? ( exc_ws_endpoint => $self->ws_endpoint )
+      : (),
+  );
 }
 
 sub init_dot_dir {
@@ -105,11 +115,10 @@ sub fetch_authority_key {
   $self->api->fetch_authority_key();
 } 
 
-sub register_host {
+sub register_client {
   my ( $self ) = @_;  
 
-  $self->api->register_host($self->activation_token);
-
+  $self->api->register_client($self->activation_token);
 }
 
 1; 
@@ -136,7 +145,9 @@ exc client-init <activation_token>  [--api-hostname https://<hostname>]
 
 =over 4
 
-=item --api-hostname https://<hostname>[:<port>] - Set/Override hostname of ExCollect API endpoint.
+=item --api-hostname https://<hostname>[:<port>][/path] - Set/Override URI of ExCollect API endpoint.
+
+=item --ws-endpoint https://<hostname>[:<port>][/path] - Set/Override URI to Websocket endpoint.. 
 
 =item --help - Print this document
 
