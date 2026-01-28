@@ -11,7 +11,7 @@ App::RaffiWare::ExCollect - ExCollect Client
 
 =head1 VERSION
 
-Version 0.003008
+Version 1.001001
 
 =head1 SYNOPSIS
 

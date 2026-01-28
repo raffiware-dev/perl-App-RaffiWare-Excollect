@@ -1,0 +1,14 @@
+---
+long_text: |
+  some big long
+  string of multi
+  line test here
+nested:
+  some:
+    struct:
+      - some
+      - of
+      - thes
+number: 94
+short_text: hi planet
+this: that

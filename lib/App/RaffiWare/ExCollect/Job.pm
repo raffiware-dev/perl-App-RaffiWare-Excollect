@@ -15,8 +15,8 @@ use Errno   qw( EAGAIN  );
 use English qw( -no_match_vars );
 use Fcntl;
 use File::Copy;
-use JSON        qw| encode_json |;
-use POSIX       qw| :sys_wait_h setsid ceil |;
+use JSON  qw| encode_json |;
+use POSIX qw| :sys_wait_h setsid ceil |;
 use Digest::SHA qw|sha256_hex|;
 use Text::ParseWords;
 use Text::Template::Simple;
@@ -27,8 +27,8 @@ use App::RaffiWare::Logger;
 use App::RaffiWare::ExCollect::Job::Logger;
 
 with 'App::RaffiWare::Role::HasLogger',
-  'App::RaffiWare::Role::HasAPIClient',
-  'App::RaffiWare::ExCollect::Role::HasClientData';
+     'App::RaffiWare::Role::HasAPIClient',
+     'App::RaffiWare::ExCollect::Role::HasClientData';
 
 has '+api_class' => ( default => sub { 'App::RaffiWare::ExCollect::API' } );
 
